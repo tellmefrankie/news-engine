@@ -305,13 +305,13 @@ CRON_SCHEDULE=0 6 * * *    # 매일 아침 6시 (KST)
 **PR**: `feat/telegram-publisher` → main
 
 ### 5단계: 파이프라인 + 스케줄러
-- [ ] 파이프라인 오케스트레이터 (collect → analyze → publish 순차 실행)
-- [ ] node-cron 스케줄러 (매일 06:00 KST)
-- [ ] CLI 명령어: `--now` (즉시 실행), `--collect-only`, `--analyze-only`, `--publish-only`
-- [ ] 에러 핸들링 + 텔레그램 에러 알림
-- [ ] 전체 파이프라인 테스트
-- [ ] README.md 작성
-- [ ] 빌드 확인
+- [x] 파이프라인 오케스트레이터 (collect → analyze → publish 순차 실행)
+- [x] node-cron 스케줄러 (매일 06:00 KST)
+- [x] CLI 명령어: `--now` (즉시 실행), `--collect-only`, `--analyze-only`, `--publish-only`
+- [x] 에러 핸들링 + 텔레그램 에러 알림
+- [x] 전체 파이프라인 테스트
+- [x] README.md 작성
+- [x] 빌드 확인
 **PR**: `feat/pipeline-scheduler` → main
 
 ---
