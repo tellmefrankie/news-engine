@@ -287,13 +287,13 @@ CRON_SCHEDULE=0 6 * * *    # 매일 아침 6시 (KST)
 **PR**: `feat/news-collector` → main
 
 ### 3단계: AI 분석기 (Analyzer)
-- [ ] Claude API 클라이언트 설정
-- [ ] 프롬프트 템플릿 (src/config/prompts.ts)
-- [ ] 중요도 필터링 모듈 (50건 → 5건)
-- [ ] 상세 분석 모듈 (요약/태그/호악재/영향도/총평)
-- [ ] 분석 결과 DB 저장
-- [ ] 분석 테스트 (수집된 데이터로 분석 실행)
-- [ ] 빌드 확인
+- [x] Claude API 클라이언트 설정
+- [x] 프롬프트 템플릿 (src/config/prompts.ts)
+- [x] 중요도 필터링 모듈 (50건 → 5건)
+- [x] 상세 분석 모듈 (요약/태그/호악재/영향도/총평)
+- [x] 분석 결과 DB 저장
+- [x] 분석 테스트 (수집된 데이터로 분석 실행)
+- [x] 빌드 확인
 **PR**: `feat/ai-analyzer` → main
 
 ### 4단계: 텔레그램 발송기 (Publisher)
