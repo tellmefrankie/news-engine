@@ -278,12 +278,12 @@ CRON_SCHEDULE=0 6 * * *    # 매일 아침 6시 (KST)
 **PR**: `feat/init-db-setup` → main
 
 ### 2단계: 뉴스 수집기 (Collector)
-- [ ] RSS 수집 모듈 (rss-parser, 4개 해외 소스)
-- [ ] 네이버 뉴스 API 수집 모듈
-- [ ] 수집기 통합 (중복 제거, DB 저장)
-- [ ] 소스 설정 (src/config/sources.ts)
-- [ ] 수집 테스트 (실제 RSS 피드에서 뉴스 가져오기)
-- [ ] 빌드 확인
+- [x] RSS 수집 모듈 (rss-parser, 4개 해외 소스)
+- [x] 네이버 뉴스 API 수집 모듈
+- [x] 수집기 통합 (중복 제거, DB 저장)
+- [x] 소스 설정 (src/config/sources.ts)
+- [x] 수집 테스트 (실제 RSS 피드에서 뉴스 가져오기)
+- [x] 빌드 확인
 **PR**: `feat/news-collector` → main
 
 ### 3단계: AI 분석기 (Analyzer)
