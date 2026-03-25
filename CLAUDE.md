@@ -268,13 +268,13 @@ CRON_SCHEDULE=0 6 * * *    # 매일 아침 6시 (KST)
 ## 작업 단계
 
 ### 1단계: 프로젝트 초기화 + DB 세팅
-- [ ] package.json, tsconfig.json, .gitignore 설정
-- [ ] 의존성 설치 (rss-parser, @anthropic-ai/sdk, grammy, better-sqlite3, node-cron, dotenv, tsx, tsup)
-- [ ] .env.example 생성
-- [ ] 타입 정의 (src/types/index.ts)
-- [ ] SQLite 초기화 + 스키마 생성 (src/db/)
-- [ ] 기본 실행 확인 (tsx src/index.ts)
-- [ ] 빌드 확인
+- [x] package.json, tsconfig.json, .gitignore 설정
+- [x] 의존성 설치 (rss-parser, @anthropic-ai/sdk, grammy, better-sqlite3, node-cron, dotenv, tsx, tsup)
+- [x] .env.example 생성
+- [x] 타입 정의 (src/types/index.ts)
+- [x] SQLite 초기화 + 스키마 생성 (src/db/)
+- [x] 기본 실행 확인 (tsx src/index.ts)
+- [x] 빌드 확인
 **PR**: `feat/init-db-setup` → main
 
 ### 2단계: 뉴스 수집기 (Collector)
