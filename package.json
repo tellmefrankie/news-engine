@@ -1,0 +1,45 @@
+{
+  "name": "news-engine",
+  "version": "1.0.0",
+  "description": "AI Tech News Analysis Engine - Collect, Analyze, Publish via Telegram",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "run:now": "tsx src/index.ts --now",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "news",
+    "ai",
+    "telegram",
+    "claude",
+    "rss"
+  ],
+  "author": "Jaehyun Park",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
+    "better-sqlite3": "^12.8.0",
+    "dotenv": "^17.3.1",
+    "grammy": "^1.41.1",
+    "node-cron": "^4.2.1",
+    "rss-parser": "^3.13.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.5.0",
+    "@types/node-cron": "^3.0.11",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
