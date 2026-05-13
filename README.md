@@ -1,6 +1,6 @@
 # AI Investment Skills for Claude Code
 
-10 Claude Code skills — investment analysis, dev workflow, and debugging tools. All free. Built from 6 months of daily portfolio management — not a demo.
+11 Claude Code skills — investment analysis, dev workflow, and debugging tools. All free. Built from 6 months of daily portfolio management — not a demo.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
@@ -108,6 +108,10 @@ Know how much context window you have left before Claude loses memory mid-task. 
 ### 10. Debug Trail
 
 Automatically documents your debugging session as you go. Tracks hypotheses, dead ends, and discoveries. When the bug is fixed, generates a complete structured report — dead ends included, to prevent the next person repeating them.
+
+### 11. Env Doctor
+
+Diagnoses your `.env` file before deployment. Finds missing vars, placeholder values never replaced, wrong API key formats, trailing spaces, and Windows line ending issues. Validates Anthropic, Telegram, Polygon, and Stripe key formats.
 
 ---
 
