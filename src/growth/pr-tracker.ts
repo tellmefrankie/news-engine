@@ -12,10 +12,9 @@ interface TrackedPR {
   title: string;
 }
 
-const TRACKED_PRS: TrackedPR[] = [
-  { repo: 'karanb192/awesome-claude-skills', number: 78, title: 'Add news-sentiment-engine to Data & Analysis' },
-  { repo: 'ComposioHQ/awesome-claude-skills', number: 822, title: 'Add ai-investment-skills to Investment & Finance section' },
-];
+// All external PRs closed 2026-05-13 per CEO directive (external repo activity prohibited).
+// Add self-repo PRs here when needed.
+const TRACKED_PRS: TrackedPR[] = [];
 
 const DASHBOARD_API = 'http://localhost:3847';
 
