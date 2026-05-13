@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 675px;
+    background: linear-gradient(135deg, #0a1628 0%, #0d2137 100%);
+    font-family: -apple-system, 'SF Pro Display', system-ui, sans-serif;
+    display: flex; flex-direction: column;
+    padding: 48px 64px;
+    overflow: hidden;
+  }
+  h1 {
+    font-size: 28px; font-weight: 800;
+    color: #f0fdf4; letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 15px; color: #86efac; margin-bottom: 32px;
+  }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-family: 'SF Mono', monospace;
+  }
+  thead th {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: #4b6a4b;
+    padding: 0 20px 10px; text-align: left;
+    border-bottom: 1px solid #1a3a1a;
+  }
+  tbody tr {
+    border-bottom: 1px solid #0f2a0f;
+  }
+  td { padding: 14px 20px; }
+  .ticker { font-size: 20px; font-weight: 700; color: #e6edf3; width: 100px; }
+  .value  { font-size: 24px; font-weight: 800; width: 120px; }
+  .label  { font-size: 14px; font-weight: 600; }
+  .footer {
+    margin-top: auto; display: flex;
+    justify-content: space-between; align-items: center;
+    padding-top: 24px;
+  }
+  .date { font-size: 13px; color: #4b6a4b; }
+  .source { font-size: 12px; color: #2d4a2d; }
+</style>
+</head>
+<body>
+  <h1>Sector ETF Options Flow Divergence</h1>
+  <div class="subtitle">When the index says bullish but one sector says otherwise</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>P/C Ratio</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr style="background:#0d2a14">
+      <td class="ticker">SPY</td>
+      <td class="value" style="color:#3fb950">0.44</td>
+      <td class="label" style="color:#3fb950">EXTREME BULLISH — broad market pricing in upside</td>
+    </tr>
+  
+    <tr style="background:#0d2a14">
+      <td class="ticker">QQQ</td>
+      <td class="value" style="color:#3fb950">0.54</td>
+      <td class="label" style="color:#3fb950">BULLISH — tech names confirming</td>
+    </tr>
+  
+    <tr style="background:#161b22">
+      <td class="ticker">IREN</td>
+      <td class="value" style="color:#8b949e">0.83</td>
+      <td class="label" style="color:#8b949e">NEUTRAL</td>
+    </tr>
+  
+    <tr style="background:#3d1a1a">
+      <td class="ticker">XLI</td>
+      <td class="value" style="color:#ff7b72">5.32</td>
+      <td class="label" style="color:#ff7b72">OUTLIER — institutional downside hedge on industrials</td>
+    </tr>
+  </tbody>
+  </table>
+  <div class="footer">
+    <div class="date">May 13, 2026</div>
+    <div class="source">github.com/tellmefrankie/news-engine</div>
+  </div>
+</body>
+</html>

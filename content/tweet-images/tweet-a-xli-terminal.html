@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 675px;
+    background: #0d1117;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .titlebar {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .dots { display: flex; gap: 8px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; }
+  .dot.y { background: #febc2e; }
+  .dot.g { background: #28c840; }
+  .title-text { color: #8b949e; font-size: 13px; flex: 1; text-align: center; }
+  .terminal {
+    flex: 1; padding: 24px 32px;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 2px;
+  }
+  .line {
+    font-size: 18px; line-height: 1.7; color: #e6edf3;
+    white-space: pre;
+  }
+  .line:empty { height: 1.7em; }
+  .eb  { color: #3fb950; font-weight: 700; }
+  .b   { color: #58a6ff; }
+  .n   { color: #8b949e; }
+  .c   { color: #d29922; }
+  .bear{ color: #f85149; font-weight: 700; }
+  .outlier { color: #ff7b72; font-weight: 700; background: #3d1a1a; padding: 0 4px; border-radius: 3px; }
+  .warn { color: #f85149; }
+  .ok  { color: #3fb950; }
+  .num { color: #e3b341; }
+  .watermark {
+    padding: 8px 32px 14px;
+    color: #30363d; font-size: 12px; text-align: right;
+  }
+</style>
+</head>
+<body>
+  <div class="titlebar">
+    <div class="dots">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+    </div>
+    <div class="title-text">OPTIONS FLOW SCANNER — morning run</div>
+  </div>
+  <div class="terminal"><div class="line">=== OPTIONS FLOW SUMMARY — 2026-05-13 ===</div><div class="line"></div><div class="line">SPY   P/C: <span class="num">0.44</span>   <span class="eb">[EXTREME BULLISH]</span></div><div class="line">QQQ   P/C: <span class="num">0.54</span>   <span class="b">[BULLISH]</span></div><div class="line">TEM   P/C: <span class="num">0.50</span>   <span class="b">[BULLISH]</span></div><div class="line">RXRX  P/C: <span class="num">0.38</span>   <span class="eb">[EXTREME BULLISH]</span></div><div class="line">IREN  P/C: <span class="num">0.83</span>   <span class="n">[NEUTRAL]</span></div><div class="line">XLI   P/C: <span class="num">5.32</span>   <span class="outlier">[OUTLIER — INSTITUTIONAL HEDGE SIGNAL]</span> <span class="warn">⚠</span></div><div class="line"></div><div class="line">Normal XLI range: <span class="num">0.5</span>–<span class="num">1.2</span></div><div class="line">Current reading: <span class="num">4.4</span>x above baseline</div></div>
+  <div class="watermark">github.com/tellmefrankie/news-engine</div>
+</body>
+</html>
