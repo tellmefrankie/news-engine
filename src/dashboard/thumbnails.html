@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thumbnails</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    align-items: flex-start;
+  }
+
+  /* ── SHARED ── */
+  .mono { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; }
+
+  /* ══════════════════════════════════════════════
+     1. dev.to COVER — 1000 × 420
+  ══════════════════════════════════════════════ */
+  #devto-cover {
+    width: 1000px;
+    height: 420px;
+    background: #0d0d0d;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px 48px 36px;
+  }
+
+  /* subtle grid overlay */
+  #devto-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(96,165,250,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(96,165,250,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* glow blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .blob-blue  { width: 320px; height: 260px; background: rgba(96,165,250,0.12); top: -60px; right: 60px; }
+  .blob-green { width: 200px; height: 180px; background: rgba(74,222,128,0.08); bottom: 0;  left: 120px; }
+
+  .devto-top { position: relative; z-index: 1; }
+  .devto-tag {
+    display: inline-block;
+    background: rgba(96,165,250,0.15);
+    border: 1px solid rgba(96,165,250,0.3);
+    color: #60a5fa;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    font-family: 'SF Mono', monospace;
+  }
+  .devto-title {
+    font-size: 38px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    max-width: 580px;
+  }
+  .devto-title span { color: #60a5fa; }
+
+  .devto-middle {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  /* Terminal card */
+  .terminal {
+    background: #111;
+    border: 1px solid #1e2a1e;
+    border-radius: 8px;
+    padding: 14px 18px;
+    flex: 1;
+    max-width: 420px;
+  }
+  .terminal-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #f87171; }
+  .dot-y { background: #facc15; }
+  .dot-g { background: #4ade80; }
+
+  .terminal-line {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    display: flex;
+    gap: 0;
+  }
+  .tl-ticker  { color: #94a3b8; width: 52px; flex-shrink: 0; }
+  .tl-pcr     { width: 52px; flex-shrink: 0; }
+  .tl-signal  { font-size: 10.5px; }
+  .sig-bull   { color: #4ade80; }
+  .sig-warn   { color: #f87171; font-weight: 700; }
+  .sig-neut   { color: #94a3b8; }
+
+  /* stat pills */
+  .stat-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+    padding-left: 4px;
+  }
+  .stat-pill {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 10px 14px;
+    min-width: 160px;
+  }
+  .stat-pill .sp-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .stat-pill .sp-val   { font-size: 18px; font-weight: 700; font-family: monospace; }
+  .sp-green  { color: #4ade80; }
+  .sp-red    { color: #f87171; }
+  .sp-blue   { color: #60a5fa; }
+
+  .devto-bottom {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .devto-url {
+    font-family: 'SF Mono', monospace;
+    font-size: 12px;
+    color: #374151;
+    letter-spacing: 0.5px;
+  }
+  .devto-tags-row { display: flex; gap: 6px; }
+  .tag-chip {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #555;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+  }
+  .devto-author {
+    font-size: 11px;
+    color: #374151;
+  }
+  .devto-author span { color: #60a5fa; }
+
+  /* ══════════════════════════════════════════════
+     2. GUMROAD THUMBNAIL — 600 × 600
+  ══════════════════════════════════════════════ */
+  #gumroad-thumb {
+    width: 600px;
+    height: 600px;
+    background: #0d0d0d;
+    border: 1px solid #1e1e1e;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    text-align: center;
+  }
+
+  #gumroad-thumb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(96,165,250,0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .gu-eyebrow {
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #60a5fa;
+    background: rgba(96,165,250,0.1);
+    border: 1px solid rgba(96,165,250,0.25);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .gu-price {
+    font-size: 80px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -2px;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 4px;
+  }
+  .gu-price sup { font-size: 36px; font-weight: 700; vertical-align: top; margin-top: 14px; color: #60a5fa; }
+
+  .gu-subtitle {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.3px;
+  }
+
+  .gu-divider {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #60a5fa, #4ade80);
+    border-radius: 2px;
+    margin: 0 auto 28px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .gu-skills {
+    list-style: none;
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 32px;
+  }
+  .gu-skill {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+  }
+  .gu-skill-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .icon-blue  { background: rgba(96,165,250,0.15); }
+  .icon-green { background: rgba(74,222,128,0.15); }
+  .icon-amber { background: rgba(251,191,36,0.15); }
+  .icon-purple{ background: rgba(167,139,250,0.15); }
+
+  .gu-skill-name { font-size: 13px; font-weight: 600; color: #e5e7eb; }
+  .gu-skill-desc { font-size: 11px; color: #4b5563; margin-top: 1px; }
+
+  .gu-proof {
+    font-size: 11px;
+    color: #374151;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+  }
+  .gu-proof strong { color: #4ade80; font-style: normal; }
+
+  /* ══════════════════════════════════════════════
+     3. AGENSI PROMO — 800 × 400
+  ══════════════════════════════════════════════ */
+  #agensi-promo {
+    width: 800px;
+    height: 400px;
+    background: #0d0d0d;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #agensi-promo::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, #1e1e1e 20%, #1e1e1e 80%, transparent);
+    z-index: 2;
+  }
+
+  .ag-panel {
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .ag-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .ag-left::after  { background: radial-gradient(ellipse 80% 60% at 0% 50%, rgba(96,165,250,0.06) 0%, transparent 70%); }
+  .ag-right::after { background: radial-gradient(ellipse 80% 60% at 100% 50%, rgba(74,222,128,0.06) 0%, transparent 70%); }
+
+  .ag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px 3px 8px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    width: fit-content;
+    position: relative;
+    z-index: 1;
+  }
+  .ag-badge-blue  { background: rgba(96,165,250,0.12); color: #60a5fa; border: 1px solid rgba(96,165,250,0.25); }
+  .ag-badge-green { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.25); }
+  .ag-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .ag-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .ag-desc {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.6;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 16px;
+  }
+
+  /* News Sentiment — feed preview */
+  .news-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .news-item {
+    background: #111;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .news-impact {
+    font-family: monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .impact-high   { background: rgba(74,222,128,0.15); color: #4ade80; }
+  .impact-med    { background: rgba(251,191,36,0.12); color: #fbbf24; }
+  .news-headline { font-size: 11px; color: #9ca3af; line-height: 1.4; }
+
+  /* EV Calculator — scenario table */
+  .ev-table {
+    position: relative;
+    z-index: 1;
+  }
+  .ev-label {
+    font-family: monospace;
+    font-size: 10px;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .ev-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 6px;
+  }
+  .ev-scenario { font-size: 11px; color: #6b7280; width: 60px; flex-shrink: 0; }
+  .ev-bar-wrap { flex: 1; height: 18px; background: #111; border-radius: 3px; overflow: hidden; margin: 0 8px; }
+  .ev-bar      { height: 100%; border-radius: 3px; }
+  .ev-bar-bull { background: linear-gradient(90deg, #4ade80, #22c55e); width: 72%; }
+  .ev-bar-base { background: linear-gradient(90deg, #60a5fa, #3b82f6); width: 50%; }
+  .ev-bar-bear { background: linear-gradient(90deg, #f87171, #ef4444); width: 28%; }
+  .ev-pct { font-family: monospace; font-size: 11px; font-weight: 600; width: 38px; text-align: right; flex-shrink: 0; }
+  .pct-g { color: #4ade80; }
+  .pct-b { color: #60a5fa; }
+  .pct-r { color: #f87171; }
+
+  .ev-result {
+    margin-top: 12px;
+    background: #111;
+    border: 1px solid #1e2a1e;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ev-result-label { font-size: 10px; color: #374151; text-transform: uppercase; letter-spacing: 1px; }
+  .ev-result-val   { font-family: monospace; font-size: 20px; font-weight: 800; color: #4ade80; }
+
+  .ag-bottom {
+    font-family: monospace;
+    font-size: 10px;
+    color: #1f2937;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     1. dev.to COVER IMAGE — 1000 × 420
+══════════════════════════════════════════════ -->
+<div id="devto-cover">
+  <div class="blob blob-blue"></div>
+  <div class="blob blob-green"></div>
+
+  <div class="devto-top">
+    <div class="devto-tag">Claude Code · Options Flow</div>
+    <div class="devto-title">AI Investment Skills<br>for <span>Claude Code</span></div>
+  </div>
+
+  <div class="devto-middle">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <div class="terminal-line">
+        <span class="tl-ticker" style="color:#374151">Ticker</span>
+        <span class="tl-pcr" style="color:#374151">P/C</span>
+        <span class="tl-signal" style="color:#374151">Signal</span>
+      </div>
+      <div class="terminal-line" style="border-top:1px solid #1a1a1a;margin:4px 0;"></div>
+      <div class="terminal-line">
+        <span class="tl-ticker">SPY</span>
+        <span class="tl-pcr sig-bull">0.44</span>
+        <span class="tl-signal sig-bull">EXTREME BULLISH</span>
+      </div>
+      <div class="terminal-line">
+        <span class="tl-ticker">QQQ</span>
+        <span class="tl-pcr sig-bull">0.54</span>
+        <span class="tl-signal sig-bull">BULLISH</span>
+      </div>
+      <div class="terminal-line">
+        <span class="tl-ticker">IWM</span>
+        <span class="tl-pcr sig-neut">1.70</span>
+        <span class="tl-signal sig-neut">DEFENSIVE</span>
+      </div>
+      <div class="terminal-line" style="background:rgba(248,113,113,0.06);border-radius:3px;padding:1px 0;">
+        <span class="tl-ticker" style="color:#f87171">XLI</span>
+        <span class="tl-pcr sig-warn">5.32</span>
+        <span class="tl-signal sig-warn">OUTLIER — INSTITUTIONAL HEDGE</span>
+      </div>
+      <div class="terminal-line">
+        <span class="tl-ticker">MP</span>
+        <span class="tl-pcr sig-neut">0.88</span>
+        <span class="tl-signal sig-neut">NEUTRAL</span>
+      </div>
+    </div>
+
+    <div class="stat-pills">
+      <div class="stat-pill">
+        <div class="sp-label">Live Skills</div>
+        <div class="sp-val sp-blue">6</div>
+      </div>
+      <div class="stat-pill">
+        <div class="sp-label">XLI Outlier</div>
+        <div class="sp-val sp-red">5.32×</div>
+      </div>
+      <div class="stat-pill">
+        <div class="sp-label">Daily Runtime</div>
+        <div class="sp-val sp-green">24/7</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="devto-bottom">
+    <div class="devto-url mono">github.com/tellmefrankie/ai-investment-skills</div>
+    <div class="devto-tags-row">
+      <span class="tag-chip">#buildinpublic</span>
+      <span class="tag-chip">#claude</span>
+      <span class="tag-chip">#algotrading</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     2. GUMROAD THUMBNAIL — 600 × 600
+══════════════════════════════════════════════ -->
+<div id="gumroad-thumb">
+  <div class="gu-eyebrow">Pro Bundle</div>
+
+  <div class="gu-price"><sup>$</sup>29</div>
+  <div class="gu-subtitle">4 Pro Skills · One-time · Instant download</div>
+
+  <div class="gu-divider"></div>
+
+  <ul class="gu-skills">
+    <li class="gu-skill">
+      <div class="gu-skill-icon icon-blue">&#9650;</div>
+      <div>
+        <div class="gu-skill-name">Investment Briefing Agent</div>
+        <div class="gu-skill-desc">9-wave market analysis · macro to catalyst</div>
+      </div>
+    </li>
+    <li class="gu-skill">
+      <div class="gu-skill-icon icon-red" style="background:rgba(248,113,113,0.15);">&#9670;</div>
+      <div>
+        <div class="gu-skill-name">Price Monitor &amp; Alert</div>
+        <div class="gu-skill-desc">Stop-loss / take-profit · Telegram alerts</div>
+      </div>
+    </li>
+    <li class="gu-skill">
+      <div class="gu-skill-icon icon-amber">&#9632;</div>
+      <div>
+        <div class="gu-skill-name">Options Flow Analyzer</div>
+        <div class="gu-skill-desc">Real vs lottery call separation · P/C outlier</div>
+      </div>
+    </li>
+    <li class="gu-skill">
+      <div class="gu-skill-icon icon-purple">&#9670;</div>
+      <div>
+        <div class="gu-skill-name">Multi-Agent Orchestrator</div>
+        <div class="gu-skill-desc">Parallel agent teams · quality harness</div>
+      </div>
+    </li>
+  </ul>
+
+  <div class="gu-proof">Built from <strong>6 months of live trading</strong> · real money, real signals</div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     3. AGENSI PROMO — 800 × 400
+══════════════════════════════════════════════ -->
+<div id="agensi-promo">
+
+  <!-- LEFT: News Sentiment Engine -->
+  <div class="ag-panel ag-left">
+    <div>
+      <div class="ag-badge ag-badge-blue">
+        <div class="ag-badge-dot"></div>
+        Free Skill
+      </div>
+      <div class="ag-title">News Sentiment<br>Engine</div>
+      <div class="ag-desc">Collect &amp; analyze AI/tech news from RSS feeds. Impact scoring, sentiment classification, and Telegram delivery — automated every morning.</div>
+    </div>
+
+    <div class="news-feed">
+      <div class="news-item">
+        <span class="news-impact impact-high">9/10</span>
+        <span class="news-headline">Anthropic launches financial-services agent platform — sector tailwind</span>
+      </div>
+      <div class="news-item">
+        <span class="news-impact impact-med">7/10</span>
+        <span class="news-headline">Fed signals higher-for-longer after CPI beat — rate review needed</span>
+      </div>
+      <div class="news-item">
+        <span class="news-impact impact-med">6/10</span>
+        <span class="news-headline">TSMC beats Q1 but guides Q2 flat — watch semi rotation signal</span>
+      </div>
+    </div>
+
+    <div class="ag-bottom">news-sentiment-engine · free install</div>
+  </div>
+
+  <!-- RIGHT: EV Calculator -->
+  <div class="ag-panel ag-right">
+    <div>
+      <div class="ag-badge ag-badge-green">
+        <div class="ag-badge-dot"></div>
+        Free Skill
+      </div>
+      <div class="ag-title">EV Calculator</div>
+      <div class="ag-desc">Expected value for stock positions using probability-weighted bull / base / bear scenarios. Know your edge before you enter.</div>
+    </div>
+
+    <div class="ev-table">
+      <div class="ev-label">Scenario Analysis</div>
+      <div class="ev-row">
+        <span class="ev-scenario">Bull</span>
+        <div class="ev-bar-wrap"><div class="ev-bar ev-bar-bull"></div></div>
+        <span class="ev-pct pct-g">+42%</span>
+      </div>
+      <div class="ev-row">
+        <span class="ev-scenario">Base</span>
+        <div class="ev-bar-wrap"><div class="ev-bar ev-bar-base"></div></div>
+        <span class="ev-pct pct-b">+18%</span>
+      </div>
+      <div class="ev-row">
+        <span class="ev-scenario">Bear</span>
+        <div class="ev-bar-wrap"><div class="ev-bar ev-bar-bear"></div></div>
+        <span class="ev-pct pct-r">-15%</span>
+      </div>
+      <div class="ev-result">
+        <span class="ev-result-label">Expected Value</span>
+        <span class="ev-result-val">+$847</span>
+      </div>
+    </div>
+
+    <div class="ag-bottom">ev-calculator · free install</div>
+  </div>
+
+</div>
+
+</body>
+</html>

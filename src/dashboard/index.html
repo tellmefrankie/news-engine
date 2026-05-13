@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeFoundry — Skill Business Dashboard</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0f0f0f; color:#e0e0e0; padding:20px; }
+  h1 { font-size:24px; margin-bottom:8px; color:#fff; }
+  .subtitle { color:#888; font-size:14px; margin-bottom:8px; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:16px; margin-bottom:24px; }
+  .card { background:#1a1a1a; border-radius:12px; padding:20px; border:1px solid #2a2a2a; }
+  .card h2 { font-size:16px; color:#aaa; margin-bottom:12px; text-transform:uppercase; letter-spacing:1px; }
+  .card h3 { font-size:14px; color:#888; margin:12px 0 8px; }
+  .metric { font-size:36px; font-weight:700; color:#fff; }
+  .metric-sm { font-size:20px; font-weight:600; color:#fff; }
+  .label { font-size:12px; color:#666; margin-top:4px; }
+  .status { display:inline-block; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; }
+  .status-done, .status-live { background:#1a3a1a; color:#4ade80; }
+  .status-progress, .status-submitted, .status-reviewing { background:#3a3a1a; color:#facc15; }
+  .status-todo { background:#2a2a2a; color:#888; }
+  .status-blocked, .status-rejected { background:#3a1a1a; color:#f87171; }
+  .status-in_progress { background:#1a2a3a; color:#60a5fa; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; }
+  th { text-align:left; color:#666; font-size:12px; padding:8px 12px; border-bottom:1px solid #2a2a2a; }
+  td { padding:8px 12px; font-size:13px; border-bottom:1px solid #1f1f1f; vertical-align:top; }
+  .platform { font-weight:600; color:#fff; }
+  .highlight { color:#60a5fa; }
+  .section-title { font-size:18px; font-weight:600; color:#fff; margin:24px 0 12px; }
+  .action-item { background:#1a1a2a; border-left:3px solid #60a5fa; padding:12px 16px; margin:8px 0; border-radius:0 8px 8px 0; cursor:pointer; transition:background 0.2s; }
+  .action-item:hover { background:#1e1e35; }
+  .action-item.seen { border-left-color:#2a2a2a; opacity:0.6; }
+  .action-item .title { font-weight:600; color:#fff; display:flex; align-items:center; gap:8px; }
+  .action-item .meta { font-size:12px; color:#888; margin-top:4px; }
+  .action-item .desc { font-size:12px; color:#aaa; margin-top:6px; }
+  .team-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid #1f1f1f; cursor:pointer; transition:background 0.2s; }
+  .team-row:hover { background:#1a1a1a; margin:0 -8px; padding:10px 8px; }
+  .team-row.seen { opacity:0.5; }
+  .team-dot { width:8px; height:8px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+  .dot-green { background:#4ade80; }
+  .dot-yellow { background:#facc15; }
+  .dot-red { background:#f87171; }
+  .dot-blue { background:#60a5fa; }
+  .team-name { font-weight:600; color:#fff; width:140px; flex-shrink:0; font-size:13px; }
+  .team-status { color:#888; font-size:13px; flex:1; }
+  .team-result { color:#666; font-size:12px; margin-top:2px; }
+  .copy-btn { background:#2a2a2a; border:1px solid #3a3a3a; color:#aaa; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:12px; }
+  .copy-btn:hover { background:#3a3a3a; color:#fff; }
+  .reg-guide { background:#111; padding:12px; border-radius:8px; margin:8px 0; font-family:monospace; font-size:12px; color:#aaa; white-space:pre-wrap; word-break:break-all; }
+  .tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .tab { padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; border:1px solid #2a2a2a; color:#888; background:#1a1a1a; position:relative; }
+  .tab.active { background:#2a2a3a; color:#60a5fa; border-color:#60a5fa; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+  .updated { color:#666; font-size:11px; text-align:right; margin-bottom:8px; }
+  .badge-new { background:#1a3060; color:#60a5fa; font-size:10px; font-weight:700; padding:2px 6px; border-radius:8px; letter-spacing:0.5px; }
+  .badge-count { background:#60a5fa; color:#000; font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; margin-left:6px; }
+  .priority-urgent { color:#f87171; font-weight:700; }
+  .priority-high { color:#fb923c; }
+  .priority-medium { color:#facc15; }
+  .priority-low { color:#888; }
+  .growth-row { padding:10px 0; border-bottom:1px solid #1f1f1f; cursor:pointer; }
+  .growth-row:hover { background:#1a1a1a; margin:0 -8px; padding:10px 8px; }
+  .growth-row.seen { opacity:0.5; }
+  .growth-time { color:#666; font-size:11px; }
+  .growth-title { font-size:13px; margin:4px 0; }
+  .growth-source { display:inline-block; padding:1px 8px; border-radius:8px; font-size:10px; font-weight:600; background:#2a2a2a; color:#888; }
+  .growth-score { color:#4ade80; font-size:11px; }
+  .accounts-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; }
+  .account-card { background:#111; border:1px solid #2a2a2a; border-radius:10px; padding:16px; }
+  .account-name { font-weight:700; font-size:15px; color:#fff; margin-bottom:8px; }
+  .account-row { display:flex; justify-content:space-between; align-items:center; margin:6px 0; font-size:13px; }
+  .account-label { color:#666; }
+  .account-ok { color:#4ade80; }
+  .account-warn { color:#facc15; }
+  .account-todo { color:#888; }
+  .account-pending { color:#60a5fa; }
+  .decision-row { padding:10px 0; border-bottom:1px solid #1f1f1f; cursor:pointer; }
+  .decision-row:hover { background:#1a1a1a; margin:0 -8px; padding:10px 8px; }
+  .decision-row.seen { opacity:0.5; }
+  .decision-topic { font-weight:600; color:#fff; font-size:13px; display:flex; align-items:center; gap:8px; }
+  .decision-text { color:#aaa; font-size:13px; margin:4px 0; }
+  .decision-by { color:#666; font-size:11px; }
+  .refresh-bar { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .refresh-dot { width:8px; height:8px; border-radius:50%; background:#4ade80; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .loading { color:#666; font-size:13px; padding:20px; text-align:center; }
+  .error-msg { color:#f87171; font-size:13px; padding:12px; background:#2a1a1a; border-radius:8px; }
+  /* CEO Todo styles */
+  .todo-card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:12px; padding:16px; margin-bottom:10px; display:flex; align-items:flex-start; gap:14px; transition:background 0.15s; }
+  .todo-card:hover { background:#1e1e1e; }
+  .todo-card.done { opacity:0.45; }
+  .todo-check { width:22px; height:22px; border-radius:50%; border:2px solid #3a3a3a; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-top:2px; transition:all 0.15s; }
+  .todo-check:hover { border-color:#60a5fa; }
+  .todo-check.done { background:#4ade80; border-color:#4ade80; }
+  .todo-check.done::after { content:''; display:block; width:6px; height:10px; border:2px solid #000; border-top:none; border-left:none; transform:rotate(45deg) translate(-1px,-1px); }
+  .todo-check.in-progress { border-color:#60a5fa; }
+  .todo-body { flex:1; }
+  .todo-title { font-size:15px; font-weight:600; color:#fff; margin-bottom:4px; }
+  .todo-desc { font-size:13px; color:#888; line-height:1.5; }
+  .todo-meta { display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap; }
+  .todo-due { font-size:11px; color:#666; }
+  .todo-due.overdue { color:#f87171; }
+  .todo-status-btn { font-size:11px; padding:2px 10px; border-radius:10px; border:none; cursor:pointer; font-weight:600; }
+  .todo-status-btn.in-progress { background:#1a2a3a; color:#60a5fa; }
+  .todo-status-btn.done { background:#1a3a1a; color:#4ade80; }
+  .todo-status-btn.undo { background:#2a2a2a; color:#888; }
+  .todo-add-form { background:#1a1a2a; border:1px solid #2a2a3a; border-radius:12px; padding:16px; margin-bottom:16px; }
+  /* Discussion styles */
+  .disc-cat { display:inline-block; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:700; letter-spacing:0.5px; }
+  .disc-cat-insight { background:#1a2a3a; color:#60a5fa; }
+  .disc-cat-finding { background:#1a3a2a; color:#4ade80; }
+  .disc-cat-proposal { background:#2a2a1a; color:#facc15; }
+  .disc-cat-alert { background:#3a1a1a; color:#f87171; }
+  .disc-cat-rebuttal { background:#2a1a2a; color:#c084fc; }
+  .disc-cat-review { background:#1a2a2a; color:#34d399; }
+  .disc-post { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:12px; padding:16px; margin-bottom:12px; }
+  .disc-post.open { border-color:#2a2a3a; }
+  .disc-post.consensus { border-color:#1a3a1a; }
+  .disc-post.closed { opacity:0.6; }
+  .disc-post-header { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+  .disc-post-team { font-weight:700; color:#fff; font-size:13px; }
+  .disc-post-title { font-size:15px; font-weight:600; color:#fff; margin-bottom:6px; cursor:pointer; }
+  .disc-post-title:hover { color:#60a5fa; }
+  .disc-post-body { font-size:13px; color:#aaa; line-height:1.6; margin-bottom:10px; }
+  .disc-post-time { color:#555; font-size:11px; }
+  .disc-status { display:inline-block; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:600; }
+  .disc-status-open { background:#1a2a3a; color:#60a5fa; }
+  .disc-status-consensus { background:#1a3a1a; color:#4ade80; }
+  .disc-status-resolved { background:#2a2a2a; color:#888; }
+  .disc-status-rejected { background:#3a1a1a; color:#f87171; }
+  .disc-status-closed { background:#2a2a2a; color:#666; }
+  .submit-btn { background:#1a2a4a; border:1px solid #60a5fa; color:#60a5fa; padding:7px 18px; border-radius:7px; cursor:pointer; font-size:13px; font-weight:600; }
+  .submit-btn:hover { background:#203060; }
+  .submit-btn:disabled { opacity:0.5; cursor:not-allowed; }
+  .disc-comments { margin-top:10px; padding-top:10px; border-top:1px solid #222; }
+  .disc-comment { display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #1a1a1a; }
+  .disc-comment:last-child { border-bottom:none; }
+  .disc-comment-team { font-weight:700; color:#aaa; font-size:12px; width:70px; flex-shrink:0; }
+  .disc-comment-body { font-size:12px; color:#888; flex:1; line-height:1.5; }
+  .disc-comment-time { font-size:10px; color:#444; margin-top:2px; }
+  .disc-filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .disc-filter { padding:4px 12px; border-radius:16px; font-size:12px; border:1px solid #2a2a2a; color:#666; background:#1a1a1a; cursor:pointer; }
+  .disc-filter.active { border-color:#60a5fa; color:#60a5fa; }
+  .disc-expand { color:#555; font-size:11px; cursor:pointer; margin-top:6px; display:inline-block; }
+  .disc-expand:hover { color:#aaa; }
+</style>
+</head>
+<body>
+
+<h1>CodeFoundry — Skill Business Dashboard</h1>
+<p class="subtitle">AI Investment Agent Skills | CEO: Jaehyun Park</p>
+
+<div style="background:#0a1a0a;border:2px solid #4ade80;border-radius:12px;padding:16px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+  <div>
+    <div style="color:#4ade80;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">목표 — 첫 $29 판매</div>
+    <div style="color:#fff;font-size:28px;font-weight:800;" id="first-sale-status">$0 / $29</div>
+    <div style="color:#666;font-size:12px;margin-top:4px;">Gumroad AI Agent Skills Pack</div>
+  </div>
+  <div style="text-align:center;">
+    <div style="color:#666;font-size:11px;margin-bottom:4px;">도전 시작</div>
+    <div style="color:#aaa;font-size:13px;font-weight:600;" id="first-sale-days">D+<span id="days-counter">0</span></div>
+    <div style="color:#555;font-size:11px;margin-top:4px;" id="first-sale-date">2026-05-13 ~</div>
+  </div>
+  <div style="text-align:right;">
+    <div style="color:#666;font-size:11px;margin-bottom:6px;">판매 채널 바로가기</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <a href="https://jaehyunpark.gumroad.com/l/tcyahy" target="_blank" style="background:#1a3a1a;border:1px solid #4ade80;color:#4ade80;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;text-align:center;">Gumroad $29 →</a>
+      <a href="https://www.agensi.io/skills/news-sentiment-engine-ai-tech-news-analyzer" target="_blank" style="background:#1a2a3a;border:1px solid #60a5fa;color:#60a5fa;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;text-align:center;">Agensi News →</a>
+      <a href="https://www.agensi.io/skills/ev-calculator-expected-value-stock-analyzer" target="_blank" style="background:#1a2a3a;border:1px solid #60a5fa;color:#60a5fa;padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;text-align:center;">Agensi EV Calc →</a>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  const start = new Date('2026-05-13');
+  const now = new Date();
+  const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+  const el = document.getElementById('days-counter');
+  if (el) el.textContent = diff;
+})();
+</script>
+
+<div id="overnight-banner" style="background:#0a0a1a;border:1px solid #3a3a6a;border-radius:10px;padding:10px 18px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+  <div style="width:8px;height:8px;border-radius:50%;background:#818cf8;flex-shrink:0;animation:pulse 2s infinite;"></div>
+  <span style="color:#818cf8;font-size:12px;font-weight:700;">야간 자율 실행 중</span>
+  <span style="color:#555;font-size:11px;">CEO 취침 중 — 에이전트 팀 자율 운영</span>
+  <span style="color:#3a3a5a;font-size:11px;margin-left:auto;" id="overnight-actions">실행 내역 로딩 중...</span>
+</div>
+<div class="refresh-bar">
+  <div class="refresh-dot"></div>
+  <span style="color:#666;font-size:12px;" id="refreshStatus">연결 중...</span>
+  <span style="color:#666;font-size:11px;margin-left:auto;" id="lastUpdate"></span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview', this)">Overview</div>
+  <div class="tab" onclick="showTab('ceo-todo', this)" style="border-color:#f87171;color:#f87171;">CEO Todo <span class="badge-count" id="badge-ceo-todo" style="background:#f87171;">...</span></div>
+  <div class="tab" onclick="showTab('actions', this)">Action Items <span class="badge-count" id="badge-actions">...</span></div>
+  <div class="tab" onclick="showTab('teams', this)">Team Status <span class="badge-count" id="badge-activity">...</span></div>
+  <div class="tab" onclick="showTab('growth', this)">Growth Monitor <span class="badge-count" id="badge-growth">...</span></div>
+  <div class="tab" onclick="showTab('accounts', this)">Accounts</div>
+  <div class="tab" onclick="showTab('registration', this)">Registration Guide</div>
+  <div class="tab" onclick="showTab('blueprint', this)">Blueprint</div>
+  <div class="tab" onclick="showTab('tools', this)">Tools</div>
+  <div class="tab" onclick="showTab('discussion', this)">Discussion <span class="badge-count" id="badge-discussion" style="display:none"></span></div>
+  <div class="tab" onclick="showTab('metrics', this)" style="border-color:#a78bfa;color:#a78bfa;">Content Metrics</div>
+  <div class="tab" onclick="showTab('browser-post', this)" style="border-color:#fb923c;color:#fb923c;">X Post</div>
+</div>
+
+<!-- OVERVIEW TAB -->
+<div class="tab-content active" id="tab-overview">
+<div class="grid">
+  <div class="card" style="border-color:#4ade80;grid-column:1/-1;">
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div style="flex:0 0 auto;">
+        <div style="font-size:11px;color:#4ade80;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">첫 판매까지</div>
+        <div style="font-size:72px;font-weight:900;color:#f87171;line-height:1;" id="revenue-total">$0</div>
+        <div style="font-size:13px;color:#555;margin-top:4px;">목표: $29 · Gumroad Bundle</div>
+        <a href="https://jaehyunpark.gumroad.com/l/tcyahy" target="_blank" style="display:inline-block;margin-top:10px;background:#22c55e;color:#000;font-size:12px;font-weight:700;padding:6px 16px;border-radius:20px;text-decoration:none;letter-spacing:0.5px;">Gumroad 구매 페이지 →</a>
+      </div>
+      <div style="flex:1;min-width:220px;">
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+            <span style="color:#888;">진행률</span><span style="color:#4ade80;" id="sale-pct">0%</span>
+          </div>
+          <div style="background:#111;border-radius:6px;height:8px;overflow:hidden;">
+            <div id="sale-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#4ade80,#22c55e);transition:width 0.8s;"></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;">
+          <div style="background:#111;border-radius:6px;padding:6px 10px;">
+            <div style="color:#555;">Gumroad Payout</div>
+            <div style="color:#f87171;font-weight:600;margin-top:2px;">미설정 — 판매 불가</div>
+            <a href="https://jaehyunpark.gumroad.com/l/tcyahy" target="_blank" style="font-size:10px;color:#60a5fa;text-decoration:none;">페이지 열기 →</a>
+          </div>
+          <div style="background:#111;border-radius:6px;padding:6px 10px;">
+            <div style="color:#555;">Agensi (News)</div>
+            <div style="color:#facc15;font-weight:600;margin-top:2px;">14 views / 0 installs</div>
+            <a href="https://www.agensi.io/skills/news-sentiment-engine-ai-tech-news-analyzer" target="_blank" style="font-size:10px;color:#60a5fa;text-decoration:none;">페이지 열기 →</a>
+          </div>
+          <div style="background:#111;border-radius:6px;padding:6px 10px;">
+            <div style="color:#555;">Show HN</div>
+            <div style="color:#f87171;font-weight:600;margin-top:2px;">미제출 → CEO Todo #1</div>
+          </div>
+          <div style="background:#111;border-radius:6px;padding:6px 10px;">
+            <div style="color:#555;">Agensi (EV Calc)</div>
+            <div style="color:#facc15;font-weight:600;margin-top:2px;">등록 완료</div>
+            <a href="https://www.agensi.io/skills/ev-calculator-expected-value-stock-analyzer" target="_blank" style="font-size:10px;color:#60a5fa;text-decoration:none;">페이지 열기 →</a>
+          </div>
+        </div>
+      </div>
+      <div style="flex:0 0 auto;text-align:center;padding:0 16px;border-left:1px solid #2a2a2a;">
+        <div style="font-size:11px;color:#555;margin-bottom:4px;">CEO Todo 남은 항목</div>
+        <div style="font-size:40px;font-weight:800;color:#facc15;" id="ceo-todo-pending">...</div>
+        <a onclick="showTab('ceo-todo', document.querySelector('[onclick*=ceo-todo]'))" style="font-size:11px;color:#60a5fa;cursor:pointer;display:block;margin-top:4px;">지금 처리하기 →</a>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Skills Published</h2>
+    <div class="metric" id="overview-skills">...</div>
+    <div class="label" id="overview-skills-label">로딩 중...</div>
+  </div>
+  <div class="card">
+    <h2>Platforms</h2>
+    <div class="metric-sm">3 Active</div>
+    <div class="label">Agensi, Gumroad, GitHub (pending)</div>
+  </div>
+  <div class="card">
+    <h2>Infrastructure</h2>
+    <div class="metric-sm">$8-15/mo</div>
+    <div class="label">Claude API + X API + Wise</div>
+    <div style="margin-top:8px;"><span class="status status-done">Wise USD</span> <span class="status status-progress">Stripe</span></div>
+  </div>
+</div>
+
+<h3 class="section-title">Content Publishing Status</h3>
+<div class="card" style="margin-bottom:24px;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+    <div>
+      <div style="font-size:12px;color:#666;margin-bottom:4px;">dev.to 발행</div>
+      <div style="font-size:24px;font-weight:700;color:#fff;" id="devto-count">10편</div>
+      <div style="font-size:11px;color:#4ade80;margin-top:2px;" id="devto-note">야간 팀 협업 완료 (총 10편)</div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:#666;margin-bottom:4px;">총 views</div>
+      <div style="font-size:24px;font-weight:700;color:#facc15;" id="devto-views">60</div>
+      <div style="font-size:11px;color:#666;margin-top:2px;" id="devto-reactions">reactions: 0 · 8편 발행</div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:#666;margin-bottom:4px;">HN Show HN</div>
+      <div style="font-size:24px;font-weight:700;color:#f87171;">미제출</div>
+      <div style="font-size:11px;color:#666;margin-top:2px;">CEO Todo 대기</div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:#666;margin-bottom:4px;">awesome-claude PRs</div>
+      <div style="font-size:24px;font-weight:700;color:#facc15;">2개</div>
+      <div style="font-size:11px;color:#666;margin-top:2px;">blocked — 팔로업 완료</div>
+    </div>
+  </div>
+  <div style="margin-top:12px;padding-top:12px;border-top:1px solid #2a2a2a;font-size:11px;color:#555;">
+    HR 진단: 투자 글은 HN/Reddit이 주 채널. dev.to는 Growth Engine 글(#1)만 적합. 재발행 스케줄: CEO Todo 참조.
+  </div>
+</div>
+
+<h3 class="section-title">Pipeline Health</h3>
+<div class="grid" id="pipeline-health-grid">
+  <div class="card" id="ph-articles">
+    <h2>News Articles</h2>
+    <div class="metric" id="ph-articles-count">...</div>
+    <div class="label" id="ph-articles-last">로딩 중...</div>
+  </div>
+  <div class="card" id="ph-analyses">
+    <h2>AI Analyses</h2>
+    <div class="metric" id="ph-analyses-count">...</div>
+    <div class="label" id="ph-analyses-last">로딩 중...</div>
+  </div>
+  <div class="card" id="ph-options">
+    <h2>Options Snapshots</h2>
+    <div class="metric" id="ph-options-count">...</div>
+    <div class="label" id="ph-options-last">로딩 중...</div>
+  </div>
+</div>
+
+<h3 class="section-title">Skill Registration Status</h3>
+<div class="card">
+  <div id="skills-table"><div class="loading">로딩 중...</div></div>
+</div>
+
+<h3 class="section-title">Key Decisions</h3>
+<div class="card">
+  <div id="decisions-list"><div class="loading">로딩 중...</div></div>
+</div>
+
+<h3 class="section-title">Revenue Targets</h3>
+<div class="grid">
+  <div class="card"><h2>Month 1</h2><div class="metric-sm">$400-600</div><div class="label">Expected revenue (weighted avg)</div></div>
+  <div class="card"><h2>Month 3</h2><div class="metric-sm">$1,500-3,000</div><div class="label">Skills + Consulting + Content</div></div>
+  <div class="card"><h2>Month 12</h2><div class="metric-sm">$3,000-8,000</div><div class="label">Skill portfolio + Subscription</div></div>
+</div>
+
+<h3 class="section-title">Conversion Funnel</h3>
+<div class="grid" style="margin-bottom:0;">
+  <div class="card">
+    <h2>Agensi CVR</h2>
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <div class="metric" style="color:#f87171;" id="cvr-agensi">0%</div>
+      <div class="label">14 views → 0 installs</div>
+    </div>
+    <div style="margin-top:10px;height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden;">
+      <div style="height:100%;background:#f87171;border-radius:3px;width:0%;"></div>
+    </div>
+    <div class="label" style="margin-top:6px;">Target: 5% (= 1 install per 20 views)</div>
+  </div>
+  <div class="card">
+    <h2>Gumroad Sales</h2>
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <div class="metric" style="color:#f87171;">0</div>
+      <div class="label">/ $0 revenue</div>
+    </div>
+    <div style="margin-top:10px;height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden;">
+      <div style="height:100%;background:#f87171;border-radius:3px;width:0%;"></div>
+    </div>
+    <div class="label" style="margin-top:6px;">Target: 15 sales/mo ($435) · BEP: 2 sales ($58)</div>
+  </div>
+  <div class="card">
+    <h2>GitHub Stars</h2>
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <div class="metric">0</div>
+      <div class="label">ai-investment-skills</div>
+    </div>
+    <div style="margin-top:10px;height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden;">
+      <div style="height:100%;background:#60a5fa;border-radius:3px;width:0%;"></div>
+    </div>
+    <div class="label" style="margin-top:6px;"><span class="status status-progress" style="font-size:10px;">PR ×2 머지 대기</span></div>
+  </div>
+</div>
+
+<h3 class="section-title">채널별 트래픽 추적 <span style="font-size:12px;color:#555;font-weight:400;margin-left:8px;">수동 업데이트 — 변화 생기면 ECHO가 기록</span></h3>
+<div class="card">
+  <table>
+    <tr>
+      <th>채널</th>
+      <th>지표</th>
+      <th>현재값</th>
+      <th>전주 대비</th>
+      <th>목표</th>
+      <th>최종 업데이트</th>
+    </tr>
+    <tr>
+      <td class="platform">Agensi</td>
+      <td>Views / Installs</td>
+      <td id="track-agensi">14 / 0</td>
+      <td><span style="color:#666;">—</span></td>
+      <td style="color:#666;">50 views / 3 installs</td>
+      <td style="color:#555;font-size:11px;" id="track-agensi-date">2026-05-13</td>
+    </tr>
+    <tr>
+      <td class="platform">Gumroad</td>
+      <td>판매 / 수익</td>
+      <td id="track-gumroad">0건 / $0</td>
+      <td><span style="color:#666;">—</span></td>
+      <td style="color:#666;">5건 / $145</td>
+      <td style="color:#555;font-size:11px;" id="track-gumroad-date">2026-05-13</td>
+    </tr>
+    <tr>
+      <td class="platform">GitHub</td>
+      <td>Stars / Forks</td>
+      <td id="track-github">0 / 0</td>
+      <td><span style="color:#666;">—</span></td>
+      <td style="color:#666;">10 stars</td>
+      <td style="color:#555;font-size:11px;" id="track-github-date">2026-05-13</td>
+    </tr>
+    <tr>
+      <td class="platform">dev.to</td>
+      <td>Views / Reactions</td>
+      <td id="track-devto">— / —</td>
+      <td><span style="color:#666;">—</span></td>
+      <td style="color:#666;">500 views / 20 reactions</td>
+      <td style="color:#555;font-size:11px;" id="track-devto-date">2026-05-13</td>
+    </tr>
+    <tr>
+      <td class="platform">HN Show HN</td>
+      <td>Points / Comments</td>
+      <td id="track-hn">미게시</td>
+      <td><span style="color:#666;">—</span></td>
+      <td style="color:#666;">10+ points</td>
+      <td style="color:#555;font-size:11px;" id="track-hn-date">—</td>
+    </tr>
+    <tr>
+      <td class="platform">awesome-claude-skills</td>
+      <td>PR 상태</td>
+      <td id="track-awesome"><span class="status status-progress">대기 중</span></td>
+      <td><span style="color:#666;">—</span></td>
+      <td style="color:#666;">머지 완료</td>
+      <td style="color:#555;font-size:11px;" id="track-awesome-date">2026-05-13</td>
+    </tr>
+  </table>
+</div>
+</div>
+
+<!-- CEO TODO TAB -->
+<div class="tab-content" id="tab-ceo-todo">
+<h3 class="section-title">CEO 오늘 할 일 <span style="font-size:13px;font-weight:400;color:#666;">퇴근 전 여기만 보면 됩니다</span></h3>
+
+<div class="todo-add-form">
+  <div style="font-size:13px;font-weight:600;color:#aaa;margin-bottom:10px;">새 할 일 추가</div>
+  <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+    <input id="todo-new-title" placeholder="할 일 제목" style="flex:2;min-width:200px;background:#111;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:7px 10px;font-size:13px;">
+    <select id="todo-new-priority" style="background:#111;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:7px 10px;font-size:13px;">
+      <option value="urgent">긴급</option>
+      <option value="high">높음</option>
+      <option value="medium" selected>보통</option>
+      <option value="low">낮음</option>
+    </select>
+    <input id="todo-new-due" type="date" style="background:#111;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:7px 10px;font-size:13px;">
+  </div>
+  <input id="todo-new-desc" placeholder="설명 (선택)" style="width:100%;background:#111;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:7px 10px;font-size:13px;margin-bottom:8px;">
+  <button class="submit-btn" onclick="addCeoTodo()">추가</button>
+</div>
+
+<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+  <div class="disc-filter active" onclick="filterTodos('all', this)">전체</div>
+  <div class="disc-filter" onclick="filterTodos('todo', this)">미완료</div>
+  <div class="disc-filter" onclick="filterTodos('in_progress', this)">진행중</div>
+  <div class="disc-filter" onclick="filterTodos('done', this)">완료</div>
+</div>
+
+<div id="ceo-todos-list"><div class="loading">로딩 중...</div></div>
+</div>
+
+<!-- ACTION ITEMS TAB -->
+<div class="tab-content" id="tab-actions">
+<h3 class="section-title">Priority Action Items</h3>
+<div id="actions-list"><div class="loading">로딩 중...</div></div>
+</div>
+
+<!-- TEAMS TAB -->
+<div class="tab-content" id="tab-teams">
+<h3 class="section-title">Team Activity Log</h3>
+<div class="card">
+  <div id="activity-list"><div class="loading">로딩 중...</div></div>
+</div>
+</div>
+
+<!-- GROWTH TAB -->
+<div class="tab-content" id="tab-growth">
+<h3 class="section-title">Growth Monitor Log</h3>
+<div class="card">
+  <div id="growth-list"><div class="loading">로딩 중...</div></div>
+</div>
+</div>
+
+<!-- ACCOUNTS TAB -->
+<div class="tab-content" id="tab-accounts">
+<h3 class="section-title">연결 필요 계정 현황</h3>
+<div class="accounts-grid">
+  <div class="account-card">
+    <div class="account-name">Agensi</div>
+    <div class="account-row"><span class="account-label">계정</span><span class="account-ok">✅ 있음</span></div>
+    <div class="account-row"><span class="account-label">Payout</span><span class="account-warn">⚠️ 미설정 (US only)</span></div>
+    <div class="account-row"><span class="account-label">전략</span><span class="account-todo">무료 스킬만 등록</span></div>
+    <div class="account-row"><span class="account-label">News Skill</span><a href="https://www.agensi.io/skills/news-sentiment-engine-ai-tech-news-analyzer" target="_blank" style="color:#60a5fa;font-size:11px;">agensi.io →</a></div>
+    <div class="account-row"><span class="account-label">EV Skill</span><a href="https://www.agensi.io/skills/ev-calculator-expected-value-stock-analyzer" target="_blank" style="color:#60a5fa;font-size:11px;">agensi.io →</a></div>
+  </div>
+  <div class="account-card">
+    <div class="account-name">Gumroad</div>
+    <div class="account-row"><span class="account-label">계정</span><span class="account-ok">✅ 있음</span></div>
+    <div class="account-row"><span class="account-label">Payout</span><span class="account-pending">⏳ 설정 중</span></div>
+    <div class="account-row"><span class="account-label">전략</span><span class="account-todo">$29 번들 유료 판매</span></div>
+  </div>
+  <div class="account-card">
+    <div class="account-name">Lemonsqueezy</div>
+    <div class="account-row"><span class="account-label">계정</span><span class="account-todo">📋 미가입</span></div>
+    <div class="account-row"><span class="account-label">한국 Payout</span><span class="account-ok">✅ 지원 확인됨</span></div>
+    <div class="account-row"><span class="account-label">수수료</span><span class="account-todo">8.5% (Gumroad보다 저렴)</span></div>
+  </div>
+  <div class="account-card">
+    <div class="account-name">GitHub</div>
+    <div class="account-row"><span class="account-label">계정</span><span class="account-ok">✅ 있음</span></div>
+    <div class="account-row"><span class="account-label">Public Repo</span><span class="account-todo">📋 미생성</span></div>
+    <div class="account-row"><span class="account-label">전략</span><span class="account-todo">오픈소스 무료 스킬 공개</span></div>
+  </div>
+  <div class="account-card">
+    <div class="account-name">Twitter/X</div>
+    <div class="account-row"><span class="account-label">계정</span><span class="account-ok">✅ 있음</span></div>
+    <div class="account-row"><span class="account-label">API 키</span><span class="account-todo">📋 미발급</span></div>
+    <div class="account-row"><span class="account-label">전략</span><span class="account-todo">BuildInPublic 스레드</span></div>
+  </div>
+  <div class="account-card">
+    <div class="account-name">Wise</div>
+    <div class="account-row"><span class="account-label">계정</span><span class="account-ok">✅ 있음</span></div>
+    <div class="account-row"><span class="account-label">USD 계좌</span><span class="account-ok">✅ 활성</span></div>
+    <div class="account-row"><span class="account-label">환불</span><span class="account-warn">⚠️ 검토 중</span></div>
+  </div>
+</div>
+</div>
+
+<!-- CONTENT METRICS TAB -->
+<div class="tab-content" id="tab-metrics">
+<div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+  <h2 style="font-size:18px;font-weight:700;color:#fff;margin:0;">Content Performance</h2>
+  <span style="font-size:11px;color:#555;" id="metrics-fetched">로딩 중...</span>
+  <button onclick="loadContentMetrics(true)" style="margin-left:auto;background:#1a1a2a;border:1px solid #3a3a5a;color:#a78bfa;padding:5px 14px;border-radius:7px;cursor:pointer;font-size:12px;">새로고침</button>
+</div>
+
+<div class="grid" style="margin-bottom:20px;">
+  <div class="card">
+    <h2>총 발행</h2>
+    <div class="metric" id="m-count">...</div>
+    <div class="label">dev.to 글</div>
+  </div>
+  <div class="card">
+    <h2>총 Views</h2>
+    <div class="metric" style="color:#facc15;" id="m-views">...</div>
+    <div class="label">전체 누적</div>
+  </div>
+  <div class="card">
+    <h2>Reactions</h2>
+    <div class="metric" style="color:#f87171;" id="m-reactions">...</div>
+    <div class="label">좋아요 합계</div>
+  </div>
+  <div class="card">
+    <h2>Best Article</h2>
+    <div class="metric-sm" id="m-best-views" style="color:#4ade80;">...</div>
+    <div class="label" id="m-best-title" style="margin-top:4px;">...</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-bottom:12px;">글별 성과</h2>
+  <div id="metrics-table"><div class="loading">로딩 중...</div></div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h2 style="margin-bottom:12px;">태그 분포</h2>
+  <div id="metrics-tags" style="display:flex;flex-wrap:wrap;gap:8px;"><div class="loading">로딩 중...</div></div>
+</div>
+</div>
+
+
+<!-- DISCUSSION TAB -->
+<div class="tab-content" id="tab-discussion">
+
+<!-- New discussion form -->
+<div class="disc-post" style="margin-bottom:16px;border-color:#2a3a4a;">
+  <div style="font-size:14px;font-weight:600;color:#aaa;margin-bottom:10px;">새 디스커션 작성</div>
+  <div style="display:flex;gap:8px;margin-bottom:8px;">
+    <input id="new-disc-team" placeholder="팀 이름 (예: dev-team, ALPHA)" style="flex:1;background:#111;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:7px 10px;font-size:13px;">
+    <select id="new-disc-cat" style="background:#111;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:7px 10px;font-size:13px;" onchange="checkLegalWarning(this.value)">
+      <option value="insight">인사이트</option>
+      <option value="finding">발견</option>
+      <option value="proposal">제안</option>
+      <option value="alert">긴급</option>
+      <option value="rebuttal">반박</option>
+    </select>
+  </div>
+  <div id="legal-warning" style="display:none;background:#2a1a1a;border:1px solid #5a2a2a;border-radius:6px;padding:8px 12px;margin-bottom:8px;font-size:12px;color:#f87171;">
+    사업/수익 관련 제안입니다. 본문에 <strong>@LEGAL</strong> 태그를 포함하고, LEGAL팀 검토 전까지 실행하지 마세요.
+  </div>
+  <input id="new-disc-title" placeholder="제목" style="width:100%;background:#111;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:7px 10px;font-size:13px;margin-bottom:8px;">
+  <textarea id="new-disc-content" placeholder="내용을 입력하세요..." style="width:100%;background:#111;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:7px 10px;font-size:13px;min-height:80px;resize:vertical;font-family:inherit;margin-bottom:8px;"></textarea>
+  <button id="new-disc-submit" class="submit-btn" onclick="submitNewDiscussion()">글 등록</button>
+</div>
+
+<div style="background:#1a2a1a;border:1px solid #2a4a2a;border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:12px;color:#4ade80;">
+  자율 실행 모드 — 3팀 이상 합의 시 즉시 실행. CEO 승인 불필요 (매매/가격변경/계정생성 제외)
+</div>
+<div style="background:#2a1a1a;border:1px solid #5a2a2a;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;">
+  <span style="color:#f87171;font-weight:700;">[CEO 지시] LEGAL 검토 필수 규칙</span><br>
+  <span style="color:#f87171;">사업 아이디어 / 수익원 / 신규 서비스 관련 제안은 본문에 @LEGAL 태그 필수.</span><br>
+  <span style="color:#aaa;">LEGAL팀 검토 댓글이 달리기 전까지 실행 금지. LEGAL팀은 해당 Discussion 자동 참여.</span>
+</div>
+<div class="disc-filters">
+  <div class="disc-filter active" onclick="filterDisc('all', this)">전체</div>
+  <div class="disc-filter" onclick="filterDisc('insight', this)">인사이트</div>
+  <div class="disc-filter" onclick="filterDisc('finding', this)">발견</div>
+  <div class="disc-filter" onclick="filterDisc('proposal', this)">제안</div>
+  <div class="disc-filter" onclick="filterDisc('alert', this)">긴급</div>
+  <div class="disc-filter" onclick="filterDisc('rebuttal', this)">반박</div>
+  <div class="disc-filter" onclick="filterDisc('review', this)">리뷰</div>
+  <div class="disc-filter" onclick="filterDiscStatus('consensus', this)">합의됨</div>
+  <div class="disc-filter" style="border-color:#5a2a2a;color:#f87171;" onclick="filterLegalPending(this)">LEGAL 대기</div>
+</div>
+
+<div id="discussion-list"><div class="loading">로딩 중...</div></div>
+
+</div>
+
+<!-- BLUEPRINT TAB -->
+<div class="tab-content" id="tab-blueprint">
+<h3 class="section-title">박재현 주식회사 — 사업 설계서</h3>
+
+<div class="grid">
+  <div class="card">
+    <h2>조직도</h2>
+    <table>
+      <tr><th>팀</th><th>역할</th></tr>
+      <tr><td class="platform">ALPHA</td><td>투자 분석 에이전트</td></tr>
+      <tr><td class="platform">BRAVO</td><td>콘텐츠 생산 에이전트</td></tr>
+      <tr><td class="platform">CHARLIE</td><td>성장 / 마케팅 에이전트</td></tr>
+      <tr><td class="platform">DELTA</td><td>재무 / 수익 에이전트</td></tr>
+      <tr><td class="platform">ECHO</td><td>대시보드 / 운영 에이전트</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>수익원</h2>
+    <table>
+      <tr><th>항목</th><th>금액 / 상태</th></tr>
+      <tr><td class="platform">CTO 급여</td><td class="highlight">200만 원/월</td></tr>
+      <tr><td class="platform">Gumroad 번들</td><td class="highlight">$29</td></tr>
+      <tr><td class="platform">Agensi 스킬</td><td><span class="status status-live">무료</span></td></tr>
+      <tr><td class="platform">컨설팅</td><td><span class="status status-todo">미시작</span></td></tr>
+      <tr><td class="platform">정부 지원</td><td><span class="status status-todo">미시작</span></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>CEO 투입 시간</h2>
+    <div class="metric">25~40분</div>
+    <div class="label">하루 평균 투입 시간</div>
+    <div style="margin-top:12px;font-size:13px;color:#888;">
+      대부분의 운영은 에이전트가 자동 처리.<br>
+      CEO는 판단·승인·방향 설정에만 집중.
+    </div>
+  </div>
+</div>
+
+<h3 class="section-title">크론 맵</h3>
+<div class="card">
+  <table>
+    <tr><th>에이전트</th><th>주기</th><th>설명</th></tr>
+    <tr><td class="platform">monitor</td><td class="highlight">5분 (장중)</td><td>투자 신호 모니터링</td></tr>
+    <tr><td class="platform">growth</td><td class="highlight">15분</td><td>성장 지표 수집</td></tr>
+    <tr><td class="platform">dashboard</td><td class="highlight">상시</td><td>ECHO 대시보드 유지</td></tr>
+    <tr><td class="platform">트윗</td><td class="highlight">15:00 KST</td><td>BuildInPublic 자동 포스팅</td></tr>
+    <tr><td class="platform">블로그</td><td class="highlight">월 10:00 KST</td><td>월간 회고 발행</td></tr>
+  </table>
+</div>
+
+<h3 class="section-title">로드맵</h3>
+<div class="grid">
+  <div class="card">
+    <h2>Phase 1 — 0~3개월</h2>
+    <div class="metric-sm" style="color:#4ade80;">스킬 판매</div>
+    <div style="margin-top:12px;font-size:13px;color:#aaa;">
+      Agensi / Gumroad 스킬 등록<br>
+      BuildInPublic 콘텐츠 자동화<br>
+      목표: 첫 $1 수익 달성
+    </div>
+    <div style="margin-top:8px;"><span class="status status-in_progress">진행 중</span></div>
+  </div>
+  <div class="card">
+    <h2>Phase 2 — 3~6개월</h2>
+    <div class="metric-sm" style="color:#facc15;">컨설팅</div>
+    <div style="margin-top:12px;font-size:13px;color:#aaa;">
+      AI 에이전트 도입 컨설팅 시작<br>
+      레퍼런스 케이스 확보<br>
+      목표: 월 $500+ 컨설팅 수익
+    </div>
+    <div style="margin-top:8px;"><span class="status status-todo">예정</span></div>
+  </div>
+  <div class="card">
+    <h2>Phase 3 — 6~12개월</h2>
+    <div class="metric-sm" style="color:#60a5fa;">구독형</div>
+    <div style="margin-top:12px;font-size:13px;color:#aaa;">
+      SaaS / 구독 상품 출시<br>
+      반복 수익 구조 구축<br>
+      목표: MRR $3,000+
+    </div>
+    <div style="margin-top:8px;"><span class="status status-todo">예정</span></div>
+  </div>
+</div>
+</div>
+
+<!-- TOOLS TAB -->
+<div class="tab-content" id="tab-tools">
+<h3 class="section-title">MCP 도구 연동 현황</h3>
+<div class="accounts-grid">
+
+  <div class="account-card">
+    <div class="account-name">Telegram</div>
+    <div class="account-row"><span class="account-label">상태</span><span class="account-ok">✅ 활성</span></div>
+    <div class="account-row"><span class="account-label">용도</span><span style="color:#aaa;font-size:12px;">에이전트 알림 · CEO 보고</span></div>
+  </div>
+
+  <div class="account-card">
+    <div class="account-name">Playwright</div>
+    <div class="account-row"><span class="account-label">상태</span><span class="account-ok">✅ 설치 완료</span></div>
+    <div class="account-row"><span class="account-label">용도</span><span style="color:#aaa;font-size:12px;">웹 스크래핑 · 자동화</span></div>
+  </div>
+
+  <div class="account-card">
+    <div class="account-name">GitHub</div>
+    <div class="account-row"><span class="account-label">gh CLI</span><span class="account-ok">✅ 연결됨</span></div>
+    <div class="account-row"><span class="account-label">MCP 서버</span><span class="account-warn">⚠️ 미설치</span></div>
+    <div class="account-row"><span class="account-label">용도</span><span style="color:#aaa;font-size:12px;">코드 배포 · PR 관리</span></div>
+  </div>
+
+  <div class="account-card">
+    <div class="account-name">Notion</div>
+    <div class="account-row"><span class="account-label">상태</span><span class="account-todo">📋 미설치</span></div>
+    <div class="account-row"><span class="account-label">용도</span><span style="color:#aaa;font-size:12px;">문서 · 지식베이스 관리</span></div>
+  </div>
+
+  <div class="account-card">
+    <div class="account-name">Brave Search</div>
+    <div class="account-row"><span class="account-label">상태</span><span class="account-todo">📋 미설치</span></div>
+    <div class="account-row"><span class="account-label">용도</span><span style="color:#aaa;font-size:12px;">실시간 웹 검색</span></div>
+  </div>
+
+  <div class="account-card">
+    <div class="account-name">Figma</div>
+    <div class="account-row"><span class="account-label">상태</span><span style="color:#666;font-size:13px;">나중에</span></div>
+    <div class="account-row"><span class="account-label">용도</span><span style="color:#aaa;font-size:12px;">디자인 자산 연동</span></div>
+  </div>
+
+  <div class="account-card">
+    <div class="account-name">Slack</div>
+    <div class="account-row"><span class="account-label">상태</span><span style="color:#666;font-size:13px;">나중에</span></div>
+    <div class="account-row"><span class="account-label">용도</span><span style="color:#aaa;font-size:12px;">팀 알림 채널</span></div>
+  </div>
+
+</div>
+</div>
+
+<!-- REGISTRATION GUIDE TAB -->
+<div class="tab-content" id="tab-registration">
+<h3 class="section-title">Platform Registration Guides</h3>
+
+<div class="card">
+  <h2>Agensi (agensi.io)</h2>
+  <h3>How to Register a Skill</h3>
+  <p style="font-size:13px;color:#aaa;">1. Go to agensi.io → List a Skill<br>
+  2. Upload ZIP (drag & drop)<br>
+  3. Fill in Skill Name, Summary, Description (auto-generated from SKILL.md)<br>
+  4. Add Tags, Keywords, Use Cases<br>
+  5. Set price (Free or Paid)<br>
+  6. Submit → Security review → Published</p>
+  <h3>ZIP Files Ready</h3>
+  <div class="reg-guide">news-engine/ev-calculator.zip ✅ Submitted
+news-engine/news-sentiment-engine.zip ⏳ Submitting
+news-engine/investment-briefing-agent.zip 📦 Ready
+news-engine/price-monitor-alert.zip 📦 Ready
+news-engine/options-flow-analyzer.zip 📦 Ready
+news-engine/multi-agent-orchestrator.zip 📦 Ready</div>
+  <h3>Payout</h3>
+  <p style="font-size:13px;color:#f87171;">⚠️ Stripe Connect US-only. 무료 스킬만 등록 가능. 유료는 Gumroad/Lemonsqueezy 사용.</p>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h2>Gumroad (gumroad.com)</h2>
+  <h3>How to Publish</h3>
+  <p style="font-size:13px;color:#aaa;">1. Products → New Product → Digital product<br>
+  2. Name, Price ($29), Description 입력<br>
+  3. Upload ai-investment-agent-bundle.zip<br>
+  4. Payout: 한국 은행 계좌 직접 입력 (KRW 지급)<br>
+  5. Publish and continue</p>
+  <h3>Payout Info</h3>
+  <div class="reg-guide">Pay to: Jaehyun Park
+Bank code: [SWIFT code - 본인 은행]
+Account #: [본인 계좌번호]
+Account type: Individual
+Fees: Direct 10% + 50¢ + 2.9% + 30¢ | Discover 30%</div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h2>GitHub (github.com)</h2>
+  <h3>How to Publish (Free Skills)</h3>
+  <p style="font-size:13px;color:#aaa;">1. Create public repo: ai-investment-skills<br>
+  2. Push skills/ directory with SKILL.md files<br>
+  3. Add README with descriptions + Gumroad link for Pro<br>
+  4. Submit PR to awesome-claude-skills list<br>
+  5. Share on Reddit/HN</p>
+  <p style="font-size:13px;color:#888;margin-top:8px;">Status: <span class="status status-todo">TODO</span></p>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h2>Lemonsqueezy (lemonsqueezy.com)</h2>
+  <h3>Alternative to Gumroad</h3>
+  <p style="font-size:13px;color:#aaa;">Fees: 5% + 3.5% (total 8.5% vs Gumroad ~13%)<br>
+  한국 판매자 지원. 가입 후 Digital product 등록.</p>
+  <p style="font-size:13px;color:#888;margin-top:8px;">Status: <span class="status status-todo">Optional backup</span></p>
+</div>
+</div>
+
+<!-- BROWSER POST TAB -->
+<div class="tab-content" id="tab-browser-post">
+<div style="background:#1a0f00;border:2px solid #fb923c;border-radius:12px;padding:14px 20px;margin-bottom:20px;">
+  <div style="color:#fb923c;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:4px;">CEO 직접 실행 — X (Twitter) 브라우저 자동 포스팅</div>
+  <div style="color:#aaa;font-size:12px;">Chrome 프로필의 로그인 세션을 사용합니다. 실행 전 Chrome이 닫혀있어야 합니다.</div>
+</div>
+
+<div class="card" style="margin-bottom:16px;">
+  <h2 style="margin-bottom:12px;">초안 선택</h2>
+  <div id="bp-drafts"><div class="loading">로딩 중...</div></div>
+</div>
+
+<div class="card">
+  <h2 style="margin-bottom:12px;">직접 작성</h2>
+  <textarea id="bp-text" placeholder="트윗 내용 입력 (최대 280자)..." style="width:100%;height:120px;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#e0e0e0;font-size:13px;padding:10px;resize:vertical;font-family:inherit;"></textarea>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+    <span id="bp-char-count" style="color:#666;font-size:12px;">0 / 280</span>
+    <div style="display:flex;gap:8px;">
+      <button onclick="clearBpText()" class="copy-btn">지우기</button>
+      <button onclick="submitBrowserPost()" id="bp-submit-btn" style="background:#7a3a00;border:1px solid #fb923c;color:#fb923c;padding:7px 18px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700;">X에 포스팅</button>
+    </div>
+  </div>
+  <div id="bp-result" style="margin-top:12px;display:none;"></div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h2 style="margin-bottom:8px;">최근 포스팅 기록</h2>
+  <div id="bp-history"><div class="loading">로딩 중...</div></div>
+</div>
+</div>
+
+<script>
+let dashboardData = null;
+let refreshTimer = null;
+
+function showTab(name, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  (el || event.target).classList.add('active');
+}
+
+function formatDate(str) {
+  if (!str) return '';
+  const d = new Date(str);
+  return d.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function priorityLabel(p) {
+  const map = { urgent: '<span class="priority-urgent">URGENT</span>', high: '<span class="priority-high">HIGH</span>', medium: '<span class="priority-medium">MEDIUM</span>', low: '<span class="priority-low">LOW</span>' };
+  return map[p] || p;
+}
+
+function statusBadge(s) {
+  const cls = 'status-' + (s || 'todo').replace(/_/g, '_');
+  const label = { todo: 'TODO', in_progress: 'In Progress', done: 'Done', blocked: 'Blocked', submitted: 'Submitted', reviewing: 'Reviewing', live: 'Live', rejected: 'Rejected' }[s] || s;
+  return `<span class="status ${cls}">${label}</span>`;
+}
+
+function newBadge() {
+  return '<span class="badge-new">NEW</span>';
+}
+
+async function markSeen(type, id, element) {
+  await fetch(`/api/${type}/${id}/seen`, { method: 'POST' });
+  element.classList.add('seen');
+  // Remove NEW badge within element
+  element.querySelectorAll('.badge-new').forEach(b => b.remove());
+  // Refresh counts
+  await loadDashboard();
+}
+
+function renderActions(actions) {
+  if (!actions || actions.length === 0) {
+    document.getElementById('actions-list').innerHTML = '<p style="color:#666;padding:12px;">액션 아이템 없음</p>';
+    return;
+  }
+  const html = actions.map(a => `
+    <div class="action-item ${a.seen_by_ceo ? 'seen' : ''}" id="action-${a.id}" onclick="markSeen('actions', ${a.id}, this)">
+      <div class="title">
+        ${!a.seen_by_ceo ? newBadge() : ''}
+        ${a.title}
+      </div>
+      <div class="meta">${priorityLabel(a.priority)} | Owner: ${a.owner || '-'} | Est: ${a.est_minutes ? a.est_minutes + 'min' : '?'} | ${statusBadge(a.status)}</div>
+      ${a.description ? `<div class="desc">${a.description}</div>` : ''}
+    </div>
+  `).join('');
+  document.getElementById('actions-list').innerHTML = html;
+}
+
+function renderActivity(activity) {
+  if (!activity || activity.length === 0) {
+    document.getElementById('activity-list').innerHTML = '<p style="color:#666;padding:12px;">활동 없음</p>';
+    return;
+  }
+  const teamColors = { planning: 'dot-green', business: 'dot-green', dev: 'dot-blue', marketing: 'dot-green', 'market-research': 'dot-green', growth: 'dot-yellow' };
+  const html = activity.map(a => `
+    <div class="team-row ${a.seen_by_ceo ? 'seen' : ''}" onclick="markSeen('activity', ${a.id}, this)">
+      <div class="team-dot ${teamColors[a.team] || 'dot-blue'}"></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="team-name">${a.team}</span>
+          ${!a.seen_by_ceo ? newBadge() : ''}
+        </div>
+        <div class="team-status">${a.activity}</div>
+        ${a.result ? `<div class="team-result">${a.result}</div>` : ''}
+        <div style="color:#555;font-size:11px;margin-top:4px;">${formatDate(a.created_at)}</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('activity-list').innerHTML = html;
+}
+
+function renderSkillsTable(skills) {
+  if (!skills || skills.length === 0) {
+    document.getElementById('skills-table').innerHTML = '<p style="color:#666;padding:12px;">스킬 없음</p>';
+    return;
+  }
+  const rows = skills.map(s => `
+    <tr>
+      <td class="platform">${s.skill_name}</td>
+      <td>${s.platform}</td>
+      <td>${statusBadge(s.status)}</td>
+      <td>${s.price || '-'}</td>
+      <td>${formatDate(s.updated_at)}</td>
+    </tr>
+  `).join('');
+  document.getElementById('skills-table').innerHTML = `
+    <table>
+      <tr><th>Skill</th><th>Platform</th><th>Status</th><th>Price</th><th>Updated</th></tr>
+      ${rows}
+    </table>
+  `;
+
+  // Overview summary
+  const live = skills.filter(s => s.status === 'live').length;
+  const total = skills.length;
+  document.getElementById('overview-skills').textContent = `${live} / ${total}`;
+  const submitted = skills.filter(s => s.status === 'submitted' || s.status === 'reviewing').length;
+  document.getElementById('overview-skills-label').textContent = `Live: ${live} | Under Review: ${submitted} | Total: ${total}`;
+}
+
+function renderGrowth(growth) {
+  if (!growth || growth.length === 0) {
+    document.getElementById('growth-list').innerHTML = '<p style="color:#666;padding:12px;">Growth 로그 없음</p>';
+    return;
+  }
+  const html = growth.map(g => `
+    <div class="growth-row ${g.seen_by_ceo ? 'seen' : ''}" onclick="markSeen('growth', ${g.id}, this)">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span class="growth-source">${g.source}</span>
+        ${!g.seen_by_ceo ? newBadge() : ''}
+        ${g.score > 0 ? `<span class="growth-score">score: ${g.score}</span>` : ''}
+        <span class="growth-time">${formatDate(g.created_at)}</span>
+      </div>
+      <div class="growth-title">${g.url ? `<a href="${g.url}" target="_blank" style="color:#60a5fa;text-decoration:none;">${g.title}</a>` : g.title}</div>
+      ${g.action_taken ? `<div style="color:#4ade80;font-size:11px;">Action: ${g.action_taken}</div>` : ''}
+    </div>
+  `).join('');
+  document.getElementById('growth-list').innerHTML = html;
+}
+
+function renderDecisions(decisions) {
+  if (!decisions || decisions.length === 0) {
+    document.getElementById('decisions-list').innerHTML = '<p style="color:#666;padding:12px;">결정 사항 없음</p>';
+    return;
+  }
+  const html = decisions.map(d => `
+    <div class="decision-row ${d.seen_by_ceo ? 'seen' : ''}" onclick="markSeen('decisions', ${d.id}, this)">
+      <div class="decision-topic">
+        ${!d.seen_by_ceo ? newBadge() : ''}
+        ${d.topic}
+      </div>
+      <div class="decision-text">${d.decision}</div>
+      ${d.reason ? `<div style="color:#666;font-size:12px;">${d.reason}</div>` : ''}
+      <div class="decision-by">${d.decided_by} · ${formatDate(d.created_at)}</div>
+    </div>
+  `).join('');
+  document.getElementById('decisions-list').innerHTML = html;
+}
+
+function updateBadges(summary) {
+  document.getElementById('badge-actions').textContent = summary.unseenActions;
+  document.getElementById('badge-activity').textContent = summary.unseenActivity;
+  document.getElementById('badge-growth').textContent = summary.unseenGrowth;
+
+  // CEO Todo badge
+  const todoBadge = document.getElementById('badge-ceo-todo');
+  if (todoBadge) {
+    todoBadge.textContent = summary.pendingCeoTodos ?? '...';
+    todoBadge.style.display = (summary.pendingCeoTodos > 0) ? '' : 'none';
+  }
+
+  // Hide badge if 0
+  ['badge-actions', 'badge-activity', 'badge-growth'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.textContent === '0') el.style.display = 'none';
+    else el.style.display = '';
+  });
+}
+
+// Discussion
+let discData = [];
+let discFilter = 'all';
+
+const catLabel = { insight: '인사이트', finding: '발견', proposal: '제안', alert: '긴급', rebuttal: '반박', review: '리뷰' };
+let discStatusFilter = null;
+
+function filterDisc(cat, el) {
+  discFilter = cat;
+  discStatusFilter = null;
+  document.querySelectorAll('.disc-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  renderDiscussion(discData);
+}
+
+function filterDiscStatus(status, el) {
+  discStatusFilter = status;
+  discFilter = 'all';
+  document.querySelectorAll('.disc-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  renderDiscussion(discData);
+}
+
+function filterLegalPending(el) {
+  discStatusFilter = null;
+  discFilter = 'all';
+  document.querySelectorAll('.disc-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  // Filter to biz posts without LEGAL reply
+  const bizKeywords = ['수익', '판매', '가격', '컨설팅', 'gumroad', 'agensi', '서비스', 'revenue', 'substack', '뉴스레터', '번들'];
+  const bizCats = ['proposal'];
+  const pending = discData.filter(p => {
+    const isBiz = bizCats.includes(p.category) || bizKeywords.some(k => (p.title + (p.content||'')).toLowerCase().includes(k));
+    const hasLegal = (p.replies||[]).some(r => r.team && r.team.toLowerCase().includes('legal'));
+    return isBiz && !hasLegal;
+  });
+  renderDiscussionFiltered(pending);
+}
+
+function renderDiscussionFiltered(posts) {
+  // Temporarily override discData for render
+  const orig = discData;
+  discData = posts;
+  renderDiscussion(posts);
+  discData = orig;
+}
+
+async function markConsensus(id) {
+  try {
+    await fetch(`/api/discussions/${id}/status`, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({status:'consensus'}) });
+    await loadDiscussion();
+  } catch(_) {}
+}
+
+function toggleComments(id) {
+  const el = document.getElementById('disc-comments-' + id);
+  const btn = document.getElementById('disc-expand-' + id);
+  if (!el) return;
+  const hidden = el.style.display === 'none';
+  el.style.display = hidden ? 'block' : 'none';
+  btn.textContent = hidden ? '댓글 접기' : `댓글 ${el.dataset.count}개 보기`;
+}
+
+function renderDiscussion(posts) {
+  const list = document.getElementById('discussion-list');
+  if (!posts || posts.length === 0) {
+    list.innerHTML = '<p style="color:#666;padding:20px;">디스커션 없음</p>';
+    return;
+  }
+  let filtered = discStatusFilter
+    ? posts.filter(p => p.status === discStatusFilter)
+    : (discFilter === 'all' ? posts : posts.filter(p => p.category === discFilter));
+  if (filtered.length === 0) {
+    list.innerHTML = '<p style="color:#666;padding:20px;">해당 카테고리 디스커션 없음</p>';
+    return;
+  }
+  const html = filtered.map(p => {
+    const catCls = 'disc-cat-' + (p.category || 'insight');
+    const statusCls = 'disc-status-' + (p.status || 'open');
+    const statusText = { open: '논의중', resolved: '해결', consensus: '합의', rejected: '기각' }[p.status] || p.status;
+    const repliesArr = p.replies || [];
+    const bizCategories = ['proposal'];
+    const bizKeywords = ['수익', '판매', '가격', '컨설팅', 'gumroad', 'agensi', '서비스', 'revenue', 'substack', '뉴스레터', '번들'];
+    const isBiz = bizCategories.includes(p.category) || bizKeywords.some(k => (p.title + p.content).toLowerCase().includes(k));
+    const hasLegal = repliesArr.some(r => r.team && r.team.toLowerCase().includes('legal'));
+    const legalBadge = isBiz && !hasLegal
+      ? '<span style="background:#3a1a1a;color:#f87171;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;border:1px solid #5a2a2a;">LEGAL 미검토 — 실행 금지</span>'
+      : (isBiz && hasLegal ? '<span style="background:#1a3a1a;color:#4ade80;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;">LEGAL OK</span>' : '');
+    const repliesHtml = repliesArr.map(r => `
+      <div class="disc-comment" style="margin-left:${Math.min(r.depth, 2) * 16}px;">
+        <div style="flex:1">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span class="disc-comment-team">${r.team}</span>
+            <span class="disc-cat disc-cat-${r.category || 'insight'}" style="font-size:10px;">${catLabel[r.category] || r.category}</span>
+            <span class="disc-comment-time">${formatDate(r.created_at)}</span>
+            ${!r.seen_by_ceo ? '<span class="badge-new" style="font-size:9px;">NEW</span>' : ''}
+          </div>
+          <div style="font-size:12px;font-weight:600;color:#ccc;margin:3px 0 2px;">${r.title}</div>
+          <div class="disc-comment-body">${r.content}</div>
+          <div style="margin-top:5px;display:flex;gap:8px;align-items:center;">
+            <button class="upvote-btn" style="font-size:11px;padding:2px 8px;" onclick="upvoteDisc(${r.id}, this)">▲ <span class="upvote-count">${r.upvotes || 0}</span></button>
+            <button class="reply-btn" onclick="toggleReplyForm(${r.id})">답글</button>
+          </div>
+          <div id="reply-form-${r.id}"></div>
+        </div>
+      </div>
+    `).join('');
+    return `
+      <div class="disc-post ${p.status || 'open'}" id="disc-${p.id}">
+        <div class="disc-post-header">
+          <span class="disc-cat ${catCls}">${catLabel[p.category] || p.category}</span>
+          <span class="disc-post-team">${p.team}</span>
+          <span class="disc-status ${statusCls}">${statusText}</span>
+          ${!p.seen_by_ceo ? '<span class="badge-new">NEW</span>' : ''}
+          ${legalBadge}
+          <span class="disc-post-time" style="margin-left:auto;">${formatDate(p.created_at)}</span>
+        </div>
+        <div class="disc-post-title" onclick="markDiscSeen(${p.id})">${p.title}</div>
+        <div class="disc-post-body">${p.content}</div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+          <button class="upvote-btn" onclick="upvoteDisc(${p.id}, this)">▲ <span class="upvote-count">${p.upvotes || 0}</span></button>
+          <button class="reply-btn" onclick="toggleReplyForm(${p.id})">댓글 달기</button>
+          ${p.status === 'open' ? `<button onclick="markConsensus(${p.id})" style="background:#1a3a1a;border:1px solid #2a5a2a;color:#4ade80;padding:2px 10px;border-radius:6px;font-size:11px;cursor:pointer;">합의 확정</button>` : ''}
+          ${repliesArr.length > 0 ? `<span style="color:#555;font-size:12px;">${repliesArr.length}개 댓글</span>` : ''}
+        </div>
+        <div id="reply-form-${p.id}"></div>
+        ${repliesArr.length > 0 ? `<div class="disc-comments">${repliesHtml}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+  list.innerHTML = html;
+
+  // badge
+  const unseen = posts.filter(p => !p.seen_by_ceo).length;
+  const badge = document.getElementById('badge-discussion');
+  if (unseen > 0) { badge.textContent = unseen; badge.style.display = ''; }
+  else { badge.style.display = 'none'; }
+}
+
+async function loadDiscussion() {
+  try {
+    const res = await fetch('/api/discussions');
+    if (!res.ok) return;
+    const data = await res.json();
+    discData = Array.isArray(data) ? data : (data.discussions || []);
+    renderDiscussion(discData);
+  } catch (_) {}
+}
+
+async function upvoteDisc(id, btn) {
+  const res = await fetch(`/api/discussions/${id}/upvote`, { method: 'POST' });
+  const data = await res.json();
+  btn.querySelector('.upvote-count').textContent = data.upvotes;
+}
+
+async function markDiscSeen(id) {
+  await fetch(`/api/discussions/${id}/seen`, { method: 'POST' });
+  const el = document.getElementById(`disc-${id}`);
+  if (el) el.querySelectorAll('.badge-new').forEach(b => b.remove());
+}
+
+function toggleReplyForm(parentId) {
+  const container = document.getElementById(`reply-form-${parentId}`);
+  if (!container) return;
+  if (container.innerHTML) { container.innerHTML = ''; return; }
+  container.innerHTML = `
+    <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:10px;margin-top:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <input id="rf-team-${parentId}" placeholder="팀 이름" style="flex:1;background:#1a1a1a;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:5px 8px;font-size:12px;">
+        <select id="rf-cat-${parentId}" style="background:#1a1a1a;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:5px 8px;font-size:12px;">
+          <option value="insight">인사이트</option><option value="finding">발견</option><option value="proposal">제안</option><option value="alert">긴급</option><option value="rebuttal">반박</option>
+        </select>
+      </div>
+      <input id="rf-title-${parentId}" placeholder="제목" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:5px 8px;font-size:12px;margin-bottom:6px;">
+      <textarea id="rf-content-${parentId}" placeholder="내용..." style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;color:#e0e0e0;border-radius:6px;padding:5px 8px;font-size:12px;min-height:60px;resize:vertical;font-family:inherit;margin-bottom:6px;"></textarea>
+      <div style="display:flex;gap:8px;">
+        <button class="submit-btn" style="font-size:12px;padding:4px 12px;" onclick="submitReply(${parentId})">등록</button>
+        <button onclick="document.getElementById('reply-form-${parentId}').innerHTML=''" style="background:none;border:none;color:#666;cursor:pointer;font-size:12px;">취소</button>
+      </div>
+    </div>
+  `;
+}
+
+async function submitReply(parentId) {
+  const team = document.getElementById(`rf-team-${parentId}`).value.trim();
+  const title = document.getElementById(`rf-title-${parentId}`).value.trim();
+  const content = document.getElementById(`rf-content-${parentId}`).value.trim();
+  const category = document.getElementById(`rf-cat-${parentId}`).value;
+  if (!team || !title || !content) { alert('팀, 제목, 내용을 입력해주세요.'); return; }
+  await fetch('/api/discussions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ team, title, content, category, parent_id: parentId })
+  });
+  document.getElementById(`reply-form-${parentId}`).innerHTML = '';
+  await loadDiscussion();
+}
+
+function checkLegalWarning(cat) {
+  const warn = document.getElementById('legal-warning');
+  if (cat === 'proposal' || cat === 'finding' || cat === 'insight') {
+    warn.style.display = 'block';
+  } else {
+    warn.style.display = 'none';
+  }
+}
+
+async function submitNewDiscussion() {
+  const team = document.getElementById('new-disc-team').value.trim();
+  const title = document.getElementById('new-disc-title').value.trim();
+  const content = document.getElementById('new-disc-content').value.trim();
+  const category = document.getElementById('new-disc-cat').value;
+  if (!team || !title || !content) { alert('팀, 제목, 내용을 입력해주세요.'); return; }
+  // LEGAL 태그 누락 경고
+  const needsLegal = (category === 'proposal' || category === 'finding' || category === 'insight');
+  if (needsLegal && !content.includes('@LEGAL')) {
+    const go = confirm('사업/수익 관련 제안에는 @LEGAL 태그가 필요합니다.\n본문에 @LEGAL이 없습니다. 그래도 등록할까요?');
+    if (!go) return;
+  }
+  const btn = document.getElementById('new-disc-submit');
+  btn.disabled = true; btn.textContent = '등록 중...';
+  await fetch('/api/discussions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ team, title, content, category })
+  });
+  document.getElementById('new-disc-team').value = '';
+  document.getElementById('new-disc-title').value = '';
+  document.getElementById('new-disc-content').value = '';
+  btn.disabled = false; btn.textContent = '글 등록';
+  await loadDiscussion();
+}
+
+async function loadDashboard() {
+  try {
+    const res = await fetch('/api/dashboard');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    dashboardData = data;
+
+    renderActions(data.actions);
+    renderActivity(data.activity);
+    renderSkillsTable(data.skills);
+    renderGrowth(data.growth);
+    renderDecisions(data.decisions);
+    updateBadges(data.summary);
+
+    // Update first-sale counter
+    const pending = data.summary.pendingCeoTodos ?? 0;
+    const pendingEl = document.getElementById('ceo-todo-pending');
+    if (pendingEl) pendingEl.textContent = pending;
+    // Revenue: hardcoded $0 until first Gumroad webhook is wired
+    const revenue = 0;
+    const pct = Math.min(100, Math.round((revenue / 29) * 100));
+    const pctEl = document.getElementById('sale-pct');
+    if (pctEl) pctEl.textContent = pct + '%';
+    const bar = document.getElementById('sale-progress-bar');
+    if (bar) bar.style.width = pct + '%';
+    const revEl = document.getElementById('revenue-total');
+    if (revEl) revEl.textContent = '$' + revenue;
+
+    document.getElementById('refreshStatus').textContent = '실시간 연결됨 (30초 자동 새로고침)';
+    document.getElementById('lastUpdate').textContent = '최종 업데이트: ' + new Date(data.generatedAt).toLocaleString('ko-KR');
+  } catch (err) {
+    document.getElementById('refreshStatus').textContent = '연결 오류: ' + err.message;
+  }
+}
+
+async function loadPipelineHealth() {
+  try {
+    const res = await fetch('/api/pipeline-health');
+    if (!res.ok) return;
+    const d = await res.json();
+
+    const setCard = (prefix, data) => {
+      const countEl = document.getElementById(`ph-${prefix}-count`);
+      const lastEl = document.getElementById(`ph-${prefix}-last`);
+      const cardEl = document.getElementById(`ph-${prefix}`);
+      if (!countEl || !lastEl || !cardEl) return;
+      countEl.textContent = data.count.toLocaleString();
+      lastEl.textContent = data.lastAt ? '최종: ' + formatDate(data.lastAt) : '기록 없음';
+      cardEl.style.borderColor = data.healthy ? '#1a3a1a' : '#3a1a1a';
+      countEl.style.color = data.healthy ? '#4ade80' : '#f87171';
+    };
+
+    setCard('articles', d.articles);
+    setCard('analyses', d.analyses);
+    setCard('options', d.options);
+  } catch (_) {}
+}
+
+// CEO Todos
+let ceoTodosData = [];
+let todoFilter = 'all';
+
+function filterTodos(filter, el) {
+  todoFilter = filter;
+  document.querySelectorAll('#tab-ceo-todo .disc-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  renderCeoTodos(ceoTodosData);
+}
+
+function renderCeoTodos(todos) {
+  const list = document.getElementById('ceo-todos-list');
+  if (!todos || todos.length === 0) {
+    list.innerHTML = '<p style="color:#666;padding:20px;">할 일 없음</p>';
+    updateCeoTodoBadge(todos);
+    return;
+  }
+  const filtered = todoFilter === 'all' ? todos : todos.filter(t => t.status === todoFilter);
+  if (filtered.length === 0) {
+    list.innerHTML = '<p style="color:#666;padding:20px;">해당 항목 없음</p>';
+    updateCeoTodoBadge(todos);
+    return;
+  }
+  const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
+  const sorted = [...filtered].sort((a, b) => {
+    if (a.status === 'done' && b.status !== 'done') return 1;
+    if (a.status !== 'done' && b.status === 'done') return -1;
+    return (priorityOrder[a.priority] ?? 3) - (priorityOrder[b.priority] ?? 3);
+  });
+  const html = sorted.map(t => {
+    const isDone = t.status === 'done';
+    const isInProgress = t.status === 'in_progress';
+    const checkCls = isDone ? 'done' : (isInProgress ? 'in-progress' : '');
+    const today = new Date().toISOString().slice(0, 10);
+    const overdue = t.due_date && t.due_date < today && !isDone;
+    const dueTxt = t.due_date ? `마감 ${t.due_date}` : '';
+    const priorityColors = { urgent: '#f87171', high: '#fb923c', medium: '#facc15', low: '#888' };
+    const priorityLabels = { urgent: 'URGENT', high: 'HIGH', medium: 'MEDIUM', low: 'LOW' };
+    return `
+      <div class="todo-card ${isDone ? 'done' : ''}" id="todo-${t.id}">
+        <div class="todo-check ${checkCls}" onclick="cycleTodoStatus(${t.id}, '${t.status}')"></div>
+        <div class="todo-body">
+          <div class="todo-title" style="${isDone ? 'text-decoration:line-through;color:#666;' : ''}">${t.title}</div>
+          ${t.description ? `<div class="todo-desc">${t.description}</div>` : ''}
+          <div class="todo-meta">
+            <span style="color:${priorityColors[t.priority] || '#888'};font-size:11px;font-weight:700;">${priorityLabels[t.priority] || t.priority}</span>
+            ${dueTxt ? `<span class="todo-due ${overdue ? 'overdue' : ''}">${overdue ? '기한 초과 · ' : ''}${dueTxt}</span>` : ''}
+            ${!isDone ? `<button class="todo-status-btn in-progress" onclick="setTodoStatus(${t.id}, 'in_progress')">진행중</button>` : ''}
+            ${!isDone ? `<button class="todo-status-btn done" onclick="setTodoStatus(${t.id}, 'done')">완료</button>` : ''}
+            ${isDone ? `<button class="todo-status-btn undo" onclick="setTodoStatus(${t.id}, 'todo')">되돌리기</button>` : ''}
+            <button onclick="deleteTodo(${t.id})" style="background:none;border:none;color:#444;cursor:pointer;font-size:12px;padding:2px 6px;" title="삭제">x</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  list.innerHTML = html;
+  updateCeoTodoBadge(todos);
+}
+
+function updateCeoTodoBadge(todos) {
+  const pending = (todos || []).filter(t => t.status !== 'done').length;
+  const badge = document.getElementById('badge-ceo-todo');
+  badge.textContent = pending;
+  badge.style.display = pending > 0 ? '' : 'none';
+}
+
+async function cycleTodoStatus(id, current) {
+  const next = current === 'todo' ? 'in_progress' : (current === 'in_progress' ? 'done' : 'todo');
+  await setTodoStatus(id, next);
+}
+
+async function setTodoStatus(id, status) {
+  await fetch(`/api/ceo-todos/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  await loadCeoTodos();
+}
+
+async function deleteTodo(id) {
+  await fetch(`/api/ceo-todos/${id}`, { method: 'DELETE' });
+  await loadCeoTodos();
+}
+
+async function addCeoTodo() {
+  const title = document.getElementById('todo-new-title').value.trim();
+  const priority = document.getElementById('todo-new-priority').value;
+  const due_date = document.getElementById('todo-new-due').value || null;
+  const description = document.getElementById('todo-new-desc').value.trim() || null;
+  if (!title) { alert('제목을 입력해주세요.'); return; }
+  await fetch('/api/ceo-todos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, priority, due_date, description })
+  });
+  document.getElementById('todo-new-title').value = '';
+  document.getElementById('todo-new-desc').value = '';
+  document.getElementById('todo-new-due').value = '';
+  await loadCeoTodos();
+}
+
+async function loadCeoTodos() {
+  try {
+    const res = await fetch('/api/ceo-todos');
+    if (!res.ok) return;
+    ceoTodosData = await res.json();
+    renderCeoTodos(ceoTodosData);
+  } catch (_) {}
+}
+
+async function loadContentMetrics(force = false) {
+  try {
+    const url = force ? '/api/content-stats?refresh=1' : '/api/content-stats';
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const d = await res.json();
+
+    // Totals
+    const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setEl('m-count', d.totals.count.toLocaleString());
+    setEl('m-views', d.totals.views.toLocaleString());
+    setEl('m-reactions', d.totals.reactions.toLocaleString());
+    setEl('metrics-fetched', d.fetchedAt ? '갱신: ' + new Date(d.fetchedAt).toLocaleString('ko-KR') + ' (30분 캐시)' : '');
+
+    // Also sync to Overview content stats card
+    setEl('devto-count', d.totals.count + '편');
+    setEl('devto-views', d.totals.views.toLocaleString());
+    const noteEl = document.getElementById('devto-note');
+    if (noteEl) noteEl.textContent = `reactions: ${d.totals.reactions} · ${d.totals.count}편 발행`;
+
+    // Best article
+    if (d.articles && d.articles.length > 0) {
+      const best = [...d.articles].sort((a, b) => b.views - a.views)[0];
+      setEl('m-best-views', best.views.toLocaleString() + ' views');
+      const bestTitle = document.getElementById('m-best-title');
+      if (bestTitle) {
+        bestTitle.innerHTML = `<a href="${best.url}" target="_blank" style="color:#60a5fa;text-decoration:none;">${best.title.slice(0, 50)}${best.title.length > 50 ? '...' : ''}</a>`;
+      }
+    }
+
+    // Articles table
+    const tableEl = document.getElementById('metrics-table');
+    if (tableEl && d.articles) {
+      const sorted = [...d.articles].sort((a, b) => b.views - a.views);
+      tableEl.innerHTML = `<table>
+        <thead><tr>
+          <th>제목</th><th>Views</th><th>Reactions</th><th>발행일</th>
+        </tr></thead>
+        <tbody>${sorted.map(a => `<tr>
+          <td><a href="${a.url}" target="_blank" style="color:#60a5fa;text-decoration:none;">${a.title.slice(0, 55)}${a.title.length > 55 ? '…' : ''}</a></td>
+          <td style="color:${a.views > 0 ? '#facc15' : '#555'};font-weight:${a.views > 0 ? '600' : '400'};">${a.views.toLocaleString()}</td>
+          <td style="color:${a.reactions > 0 ? '#4ade80' : '#555'};">${a.reactions}</td>
+          <td style="color:#666;font-size:11px;">${a.publishedAt ? a.publishedAt.slice(0, 10) : '-'}</td>
+        </tr>`).join('')}
+        </tbody></table>`;
+    }
+
+    // Tag distribution
+    const tagsEl = document.getElementById('metrics-tags');
+    if (tagsEl && d.articles) {
+      const tagCounts = {};
+      d.articles.forEach(a => (a.tags ?? []).forEach(t => { tagCounts[t] = (tagCounts[t] ?? 0) + 1; }));
+      const sorted = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+      tagsEl.innerHTML = sorted.map(([tag, cnt]) =>
+        `<span style="background:#1a1a2a;border:1px solid #3a3a5a;color:#a78bfa;padding:4px 12px;border-radius:16px;font-size:12px;">#${tag} <span style="color:#555;">${cnt}</span></span>`
+      ).join('');
+    }
+  } catch (_) {}
+}
+
+async function loadOvernightStatus() {
+  try {
+    const res = await fetch('/api/discussions?limit=50');
+    if (!res.ok) return;
+    const posts = await res.json();
+    // Count posts since CEO went to sleep (last 8 hours)
+    const cutoff = new Date(Date.now() - 8 * 60 * 60 * 1000);
+    const recent = (Array.isArray(posts) ? posts : posts.posts ?? [])
+      .filter(p => new Date(p.created_at) > cutoff);
+    const el = document.getElementById('overnight-actions');
+    if (el) {
+      el.textContent = recent.length > 0
+        ? `야간 실행 ${recent.length}건 완료`
+        : '대기 중';
+      el.style.color = recent.length > 0 ? '#818cf8' : '#3a3a5a';
+    }
+    // Also update devto views live from discussion data if available
+    const devtoViews = document.getElementById('devto-views');
+    if (devtoViews && devtoViews.textContent === '60') {
+      // fetch live from dev.to
+      fetch('https://dev.to/api/articles/me', { headers: { 'api-key': '' } })
+        .catch(() => {}); // no-op if key not in browser context
+    }
+  } catch (_) {}
+}
+
+
+// Content Metrics
+async function loadContentStats(force = false) {
+  const url = force ? '/api/content-stats?bust=' + Date.now() : '/api/content-stats';
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const d = await res.json();
+    renderContentMetrics(d);
+  } catch (_) {}
+}
+
+function renderContentMetrics(d) {
+  const articles = d.articles || [];
+  const totals = d.totals || { count: 0, views: 0, reactions: 0 };
+
+  document.getElementById('cm-total-views').textContent = totals.views.toLocaleString();
+  document.getElementById('cm-total-reactions').textContent = totals.reactions.toLocaleString();
+  document.getElementById('cm-article-count').textContent = totals.count + '편 게시';
+
+  const fetchedAt = d.fetchedAt ? new Date(d.fetchedAt).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+  document.getElementById('cm-fetched-at').textContent = '업데이트: ' + fetchedAt;
+
+  const best = articles.slice().sort((a, b) => b.views - a.views)[0];
+  if (best) {
+    document.getElementById('cm-best-views').textContent = best.views.toLocaleString() + ' views';
+    document.getElementById('cm-best-title').innerHTML = '<a href="' + best.url + '" target="_blank" style="color:#60a5fa;text-decoration:none;">' + best.title.slice(0, 60) + (best.title.length > 60 ? '…' : '') + '</a>';
+  } else {
+    document.getElementById('cm-best-views').textContent = '0';
+    document.getElementById('cm-best-title').textContent = '—';
+  }
+
+  const tbody = document.getElementById('cm-table-body');
+  if (!articles.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="color:#666;padding:16px;">데이터 없음</td></tr>';
+    return;
+  }
+
+  const sorted = articles.slice().sort((a, b) => b.views - a.views);
+  tbody.innerHTML = sorted.map(a => {
+    const tags = (a.tags || []).slice(0, 3).map(t => '<span style="background:#1a2a2a;color:#34d399;font-size:10px;padding:1px 6px;border-radius:8px;margin-right:3px;">' + t + '</span>').join('');
+    const date = a.publishedAt ? new Date(a.publishedAt).toLocaleDateString('ko-KR', { month:'numeric', day:'numeric' }) : '—';
+    const viewColor = a.views > 50 ? '#4ade80' : a.views > 10 ? '#facc15' : '#e0e0e0';
+    return '<tr>' +
+      '<td><a href="' + a.url + '" target="_blank" style="color:#60a5fa;text-decoration:none;">' + a.title.slice(0, 55) + (a.title.length > 55 ? '…' : '') + '</a></td>' +
+      '<td>' + tags + '</td>' +
+      '<td style="text-align:right;color:' + viewColor + ';font-weight:600;">' + (a.views || 0) + '</td>' +
+      '<td style="text-align:right;">' + (a.reactions || 0) + '</td>' +
+      '<td style="text-align:right;">' + (a.comments || 0) + '</td>' +
+      '<td style="color:#666;font-size:11px;">' + date + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+// Browser Post (X / Twitter via Playwright)
+async function loadBrowserPostDrafts() {
+  try {
+    const drafts = await fetch('/api/browser-post/queue').then(r => r.json());
+    const el = document.getElementById('bp-drafts');
+    if (!el) return;
+    if (!drafts || !drafts.length) { el.innerHTML = '<div class="loading">초안 없음</div>'; return; }
+    el.innerHTML = drafts.map(d => `
+      <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;" onclick="selectBpDraft(${JSON.stringify(d.text).replace(/</g,'&lt;')})">
+        <div style="font-size:12px;color:#fb923c;font-weight:700;margin-bottom:6px;">${d.label}</div>
+        <div style="font-size:12px;color:#aaa;white-space:pre-wrap;line-height:1.5;">${d.text.replace(/</g,'&lt;')}</div>
+        <div style="font-size:11px;color:#555;margin-top:6px;">${d.text.length} / 280자 · 클릭하여 편집기로 불러오기</div>
+      </div>
+    `).join('');
+  } catch {}
+}
+
+function selectBpDraft(text) {
+  const ta = document.getElementById('bp-text');
+  if (ta) { ta.value = text; updateBpCharCount(); }
+}
+
+function clearBpText() {
+  const ta = document.getElementById('bp-text');
+  if (ta) { ta.value = ''; updateBpCharCount(); }
+  const res = document.getElementById('bp-result');
+  if (res) res.style.display = 'none';
+}
+
+function updateBpCharCount() {
+  const ta = document.getElementById('bp-text');
+  const cc = document.getElementById('bp-char-count');
+  if (!ta || !cc) return;
+  const len = ta.value.length;
+  cc.textContent = `${len} / 280`;
+  cc.style.color = len > 280 ? '#f87171' : len > 240 ? '#facc15' : '#666';
+}
+
+async function submitBrowserPost() {
+  const ta = document.getElementById('bp-text');
+  const btn = document.getElementById('bp-submit-btn');
+  const res = document.getElementById('bp-result');
+  if (!ta || !btn || !res) return;
+  const text = ta.value.trim();
+  if (!text) { alert('트윗 내용을 입력하세요.'); return; }
+  if (text.length > 280) { alert('280자 초과. 줄여주세요.'); return; }
+  if (!confirm(`아래 내용을 X에 포스팅할까요?\n\n"${text}"`)) return;
+  btn.disabled = true;
+  btn.textContent = '포스팅 중...';
+  res.style.display = 'none';
+  try {
+    const data = await fetch('/api/browser-post', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    }).then(r => r.json());
+    if (data.ok) {
+      res.style.display = 'block';
+      res.innerHTML = '<div style="background:#0a3a0a;border:1px solid #4ade80;border-radius:8px;padding:10px 14px;color:#4ade80;font-size:13px;font-weight:600;">포스팅 완료!</div>';
+      ta.value = '';
+      updateBpCharCount();
+      loadBpHistory();
+    } else {
+      res.style.display = 'block';
+      res.innerHTML = `<div style="background:#3a0a0a;border:1px solid #f87171;border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;">실패: ${data.error || '알 수 없는 오류'}</div>`;
+    }
+  } catch (e) {
+    res.style.display = 'block';
+    res.innerHTML = `<div style="background:#3a0a0a;border:1px solid #f87171;border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;">네트워크 오류: ${e}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'X에 포스팅';
+  }
+}
+
+async function loadBpHistory() {
+  try {
+    const data = await fetch('/api/growth').then(r => r.json());
+    const posts = data.filter(g => g.source === 'twitter' && g.action === 'browser_post');
+    const el = document.getElementById('bp-history');
+    if (!el) return;
+    if (!posts.length) { el.innerHTML = '<div style="color:#555;font-size:13px;padding:8px;">기록 없음</div>'; return; }
+    el.innerHTML = posts.slice(0, 10).map(p => `
+      <div style="padding:10px 0;border-bottom:1px solid #1f1f1f;">
+        <div style="font-size:12px;color:#aaa;">${p.result}</div>
+        <div style="font-size:11px;color:#555;margin-top:4px;">${p.created_at}</div>
+      </div>
+    `).join('');
+  } catch {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const ta = document.getElementById('bp-text');
+  if (ta) ta.addEventListener('input', updateBpCharCount);
+});
+
+// Initial load
+loadDashboard();
+loadDiscussion();
+loadPipelineHealth();
+loadCeoTodos();
+loadOvernightStatus();
+loadContentMetrics();
+loadBrowserPostDrafts();
+loadBpHistory();
+
+// Auto-refresh every 30 seconds
+refreshTimer = setInterval(() => { loadDashboard(); loadDiscussion(); loadPipelineHealth(); loadCeoTodos(); loadOvernightStatus(); loadContentStats(); }, 30000);
+</script>
+</body>
+</html>
