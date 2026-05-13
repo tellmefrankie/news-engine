@@ -85,7 +85,7 @@ function buildOAuthHeader(
   return authHeader;
 }
 
-export async function postTweet(text: string): Promise<boolean> {
+export async function postTweet(text: string, replyToId?: string): Promise<boolean> {
   const creds = getCredentials();
 
   if (!creds) {
@@ -97,7 +97,11 @@ export async function postTweet(text: string): Promise<boolean> {
   }
 
   const url = 'https://api.twitter.com/2/tweets';
-  const body = JSON.stringify({ text });
+  const payload: Record<string, unknown> = { text };
+  if (replyToId) {
+    payload.reply = { in_reply_to_tweet_id: replyToId };
+  }
+  const body = JSON.stringify(payload);
 
   const authHeader = buildOAuthHeader('POST', url, creds);
 
