@@ -113,6 +113,66 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     return;
   }
 
+  // GET /api/github-referrers — fetch GitHub traffic referrers and cache to funnel_snapshots
+  if (method === 'GET' && url === '/api/github-referrers') {
+    try {
+      const { execSync } = await import('child_process');
+      const repos = ['tellmefrankie/ai-investment-skills', 'tellmefrankie/news-engine'];
+      const combined: Record<string, number> = {};
+
+      for (const repo of repos) {
+        try {
+          const raw = execSync(
+            `gh api repos/${repo}/traffic/referrers 2>/dev/null || echo '[]'`,
+            { encoding: 'utf8', timeout: 10000 }
+          ).trim();
+          const items = JSON.parse(raw) as Array<{ referrer: string; count: number }>;
+          for (const item of items) {
+            combined[item.referrer] = (combined[item.referrer] ?? 0) + item.count;
+          }
+        } catch { /* repo may have no traffic data */ }
+      }
+
+      const referrers = Object.entries(combined)
+        .sort(([, a], [, b]) => b - a)
+        .map(([referrer, count]) => ({ referrer, count }));
+
+      // Persist to today's funnel snapshot if column exists
+      const today = new Date().toISOString().slice(0, 10);
+      try {
+        db.prepare(
+          `INSERT INTO funnel_snapshots (snapshot_date, github_referrers)
+           VALUES (?, ?)
+           ON CONFLICT(snapshot_date) DO UPDATE SET github_referrers = excluded.github_referrers`
+        ).run(today, JSON.stringify(referrers));
+      } catch { /* funnel_snapshots may not have github_referrers column yet */ }
+
+      json(res, { referrers, updatedAt: new Date().toISOString() });
+    } catch (err) {
+      console.error('[Dashboard] /api/github-referrers error:', err);
+      json(res, { error: String(err) }, 500);
+    }
+    return;
+  }
+
+  // POST /api/growth-log — teams push growth activity (X replies, GitHub, etc.)
+  if (method === 'POST' && url === '/api/growth-log') {
+    let body = '';
+    req.on('data', (chunk: Buffer) => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const { source, title, url: itemUrl, score, action_taken, utm_tag } = JSON.parse(body);
+        if (!source || !title) { json(res, { error: 'source and title required' }, 400); return; }
+        const result = db.prepare(`
+          INSERT INTO growth_log (source, title, url, score, action_taken, utm_tag, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+        `).run(source, title, itemUrl ?? null, score ?? 0, action_taken ?? null, utm_tag ?? null);
+        json(res, { ok: true, id: result.lastInsertRowid });
+      } catch { json(res, { error: 'Invalid JSON' }, 400); }
+    });
+    return;
+  }
+
   // POST /api/growth/:id/seen
   const growthSeenMatch = url.match(/^\/api\/growth\/(\d+)\/seen$/);
   if (method === 'POST' && growthSeenMatch) {
@@ -400,8 +460,8 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
 
   // GET /api/funnel — latest funnel snapshot
   if (method === 'GET' && url === '/api/funnel') {
-    const latest = db.prepare('SELECT * FROM funnel_snapshots ORDER BY snapshot_date DESC, id DESC LIMIT 1').get() as Record<string, unknown> | undefined;
-    const history = db.prepare('SELECT * FROM funnel_snapshots ORDER BY snapshot_date DESC LIMIT 30').all();
+    const latest = db.prepare('SELECT * FROM funnel_snapshots ORDER BY date DESC, id DESC LIMIT 1').get() as Record<string, unknown> | undefined;
+    const history = db.prepare('SELECT * FROM funnel_snapshots ORDER BY date DESC LIMIT 30').all();
     json(res, { latest: latest ?? null, history });
     return;
   }
@@ -414,12 +474,19 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       try {
         const { date, devto_views, github_stars, github_forks, gumroad_clicks, gumroad_sales, revenue_usd, notes } = JSON.parse(body);
         if (!date) { json(res, { error: 'date required (YYYY-MM-DD)' }, 400); return; }
-        // Upsert by date
-        db.prepare(`
-          INSERT INTO funnel_snapshots (date, devto_views, github_stars, github_forks, gumroad_clicks, gumroad_sales, revenue_usd, notes)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-          ON CONFLICT DO NOTHING
-        `).run(date, devto_views ?? 0, github_stars ?? 0, github_forks ?? 0, gumroad_clicks ?? 0, gumroad_sales ?? 0, revenue_usd ?? 0, notes ?? null);
+        // Upsert by date — update if exists, insert if new
+        const existing = db.prepare('SELECT id FROM funnel_snapshots WHERE date = ?').get(date) as { id: number } | undefined;
+        if (existing) {
+          db.prepare(`
+            UPDATE funnel_snapshots SET devto_views=?, github_stars=?, github_forks=?, gumroad_clicks=?, gumroad_sales=?, revenue_usd=?, notes=COALESCE(?, notes)
+            WHERE date=?
+          `).run(devto_views ?? 0, github_stars ?? 0, github_forks ?? 0, gumroad_clicks ?? 0, gumroad_sales ?? 0, revenue_usd ?? 0, notes ?? null, date);
+        } else {
+          db.prepare(`
+            INSERT INTO funnel_snapshots (date, devto_views, github_stars, github_forks, gumroad_clicks, gumroad_sales, revenue_usd, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          `).run(date, devto_views ?? 0, github_stars ?? 0, github_forks ?? 0, gumroad_clicks ?? 0, gumroad_sales ?? 0, revenue_usd ?? 0, notes ?? null);
+        }
         json(res, { ok: true });
       } catch {
         json(res, { error: 'Invalid JSON' }, 400);
