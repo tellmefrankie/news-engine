@@ -8,6 +8,11 @@ import { createHmac, randomBytes } from 'node:crypto';
  * Falls back to console output if credentials not set.
  */
 
+// X/social comment policy: NO paid links (Gumroad), NO price mentions in replies.
+// Own posts may include Gumroad, but comments on others' tweets must not.
+const GITHUB_LINK = 'https://github.com/tellmefrankie/news-engine';
+const AGENSI_FREE_LINK = 'https://www.agensi.io/skills/news-sentiment-engine-ai-tech-news-analyzer';
+// Gumroad is for own posts only — never auto-append to comments/replies
 const GUMROAD_LINK = 'https://jaehyunpark.gumroad.com/l/tcyahy';
 
 interface TwitterCredentials {
@@ -122,8 +127,8 @@ export async function postTweet(text: string): Promise<boolean> {
 }
 
 /**
- * Post a tweet from a pre-generated file or inline text.
- * Ensures CTA with Gumroad link is appended if not present.
+ * Post a standalone promotional tweet (OWN content only).
+ * May include Gumroad link. Do NOT use for replies to others' tweets.
  */
 export async function postTweetWithCTA(text: string): Promise<boolean> {
   const maxLen = 280;
@@ -131,7 +136,6 @@ export async function postTweetWithCTA(text: string): Promise<boolean> {
 
   let finalText = text;
   if (!finalText.includes(GUMROAD_LINK)) {
-    // Only append CTA if it fits
     if ((finalText + cta).length <= maxLen) {
       finalText = finalText + cta;
     }
@@ -142,6 +146,32 @@ export async function postTweetWithCTA(text: string): Promise<boolean> {
   }
 
   return postTweet(finalText);
+}
+
+/**
+ * Post a reply/comment on someone else's tweet.
+ * CEO RULE (final): NO links of any kind in replies. Technical value only.
+ * Must be approved in team Discussion before posting.
+ * Strips ALL URLs, pricing, and CTAs before posting.
+ */
+export async function postReplyWithPolicy(text: string): Promise<boolean> {
+  const maxLen = 280;
+
+  // Strip ALL links (CEO final rule: no links in replies — not even GitHub)
+  let safe = text
+    .replace(/https?:\/\/[^\s]+/gi, '')
+    .replace(/\$29\b/g, '')
+    .replace(/\bbuy\b/gi, 'try')
+    .replace(/\bpurchase\b/gi, 'check out')
+    .replace(/  +/g, ' ')
+    .trim();
+
+  if (safe.length > maxLen) {
+    safe = safe.substring(0, maxLen - 3) + '...';
+  }
+
+  console.log('[Twitter] Reply (policy-filtered, no links):', safe);
+  return postTweet(safe);
 }
 
 // CLI: npx tsx src/growth/twitter-poster.ts "tweet text"

@@ -39,6 +39,37 @@ export async function postTweet(text: string): Promise<boolean> {
   }
 }
 
+/**
+ * CEO RULE: X comments must not contain Gumroad paid links, pricing, or "buy" CTAs.
+ * Allowed: GitHub link, Agensi free skill link, technical value only.
+ */
+const REPLY_BLOCKED_PATTERNS = [
+  /https?:\/\/[^\s]*gumroad[^\s]*/gi,
+  /\$29\b/g,
+  /\bbuy (now|this|it)\b/gi,
+  /\bpurchase\b/gi,
+];
+
+function enforceReplyPolicy(text: string): string {
+  // CEO final rule: no links of any kind in replies
+  let safe = text;
+  safe = safe.replace(/https?:\/\/[^\s]+/gi, '');
+  safe = safe.replace(/\$29\b/g, '');
+  safe = safe.replace(/\bbuy (now|this|it)\b/gi, 'try it');
+  safe = safe.replace(/\bpurchase\b/gi, 'check out');
+  safe = safe.replace(/  +/g, ' ');
+  return safe.trim();
+}
+
+/** Policy-enforced reply — strips paid links before posting. Use this for all comments. */
+export async function replyToTweetSafe(tweetUrl: string, replyText: string): Promise<boolean> {
+  const safe = enforceReplyPolicy(replyText);
+  if (safe !== replyText) {
+    console.log('[X-Auto] Reply policy applied. Original stripped of paid links/pricing.');
+  }
+  return replyToTweet(tweetUrl, safe);
+}
+
 export async function replyToTweet(tweetUrl: string, replyText: string): Promise<boolean> {
   try {
     console.log(`[X-Auto] Replying to ${tweetUrl}...`);
@@ -79,6 +110,7 @@ if (args[0] === '--tweet') {
 } else if (args[0] === '--reply') {
   const url = args[1];
   const text = args.slice(2).join(' ');
-  if (url && text) replyToTweet(url, text);
+  // Always use policy-enforced reply (no Gumroad/pricing in comments)
+  if (url && text) replyToTweetSafe(url, text);
   else console.log('Usage: --reply <tweet-url> <text>');
 }
