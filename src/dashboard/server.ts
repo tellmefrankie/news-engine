@@ -265,10 +265,10 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     return;
   }
 
-  // GET /api/content-stats — live dev.to article stats (30min cache)
+  // GET /api/content-stats — live dev.to article stats (5min cache)
   if (method === 'GET' && url === '/api/content-stats') {
     const now = Date.now();
-    if (!contentStatsCache || now - contentStatsCacheTime > 30 * 60 * 1000) {
+    if (!contentStatsCache || now - contentStatsCacheTime > 5 * 60 * 1000) {
       try {
         const devtoKey = process.env.DEVTO_API_KEY ?? '';
         const resp = await fetch('https://dev.to/api/articles/me?per_page=20', {
@@ -355,8 +355,8 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         if (ok) {
           // Log to growth_log
           db.prepare(`
-            INSERT INTO growth_log (source, action, result, score, created_at)
-            VALUES ('twitter', 'browser_post', ?, 1, datetime('now'))
+            INSERT INTO growth_log (source, title, action_taken, score, created_at)
+            VALUES ('twitter', ?, 'browser_post', 1, datetime('now'))
           `).run(text.trim().substring(0, 120));
           json(res, { ok: true, message: 'Posted to X via browser' });
         } else {
@@ -395,6 +395,65 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       },
     ];
     json(res, drafts);
+    return;
+  }
+
+  // GET /api/funnel — latest funnel snapshot
+  if (method === 'GET' && url === '/api/funnel') {
+    const latest = db.prepare('SELECT * FROM funnel_snapshots ORDER BY snapshot_date DESC, id DESC LIMIT 1').get() as Record<string, unknown> | undefined;
+    const history = db.prepare('SELECT * FROM funnel_snapshots ORDER BY snapshot_date DESC LIMIT 30').all();
+    json(res, { latest: latest ?? null, history });
+    return;
+  }
+
+  // POST /api/funnel-snapshot — DELTA pushes daily funnel data
+  if (method === 'POST' && url === '/api/funnel-snapshot') {
+    let body = '';
+    req.on('data', (chunk: Buffer) => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const { date, devto_views, github_stars, github_forks, gumroad_clicks, gumroad_sales, revenue_usd, notes } = JSON.parse(body);
+        if (!date) { json(res, { error: 'date required (YYYY-MM-DD)' }, 400); return; }
+        // Upsert by date
+        db.prepare(`
+          INSERT INTO funnel_snapshots (date, devto_views, github_stars, github_forks, gumroad_clicks, gumroad_sales, revenue_usd, notes)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT DO NOTHING
+        `).run(date, devto_views ?? 0, github_stars ?? 0, github_forks ?? 0, gumroad_clicks ?? 0, gumroad_sales ?? 0, revenue_usd ?? 0, notes ?? null);
+        json(res, { ok: true });
+      } catch {
+        json(res, { error: 'Invalid JSON' }, 400);
+      }
+    });
+    return;
+  }
+
+  // GET /api/options/snapshot-png — generate or return cached PNG metadata
+  if (method === 'GET' && url === '/api/options/snapshot-png') {
+    try {
+      const { generateSnapshotPng } = await import('../options/sentiment-snapshot.js');
+      const result = await generateSnapshotPng();
+      json(res, result);
+    } catch (err) {
+      console.error('[Dashboard] /api/options/snapshot-png error:', err);
+      json(res, { error: String(err) }, 500);
+    }
+    return;
+  }
+
+  // GET /api/options/snapshot-png/image — serve PNG binary
+  if (method === 'GET' && url === '/api/options/snapshot-png/image') {
+    try {
+      const { generateSnapshotPng } = await import('../options/sentiment-snapshot.js');
+      const result = await generateSnapshotPng();
+      const fs = await import('fs');
+      const buf = fs.readFileSync(result.path);
+      res.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': buf.length });
+      res.end(buf);
+    } catch (err) {
+      console.error('[Dashboard] /api/options/snapshot-png/image error:', err);
+      json(res, { error: String(err) }, 500);
+    }
     return;
   }
 
