@@ -379,19 +379,19 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         id: 1,
         text: `XLI options P/C hit 5.32 last week. Normal range: 0.5-1.2.\n\nAfter filtering $0.01 lottery calls: still 4.89. Real institutional hedging, not noise.\n\nRaw P/C said neutral. Adjusted said extremely bearish.\n\n#ClaudeCode #options #algotrading`,
         label: 'XLI Scanner Story',
-        imagePath: ASSETS + '/thumb-xli-anomaly.svg',
+        imagePath: ASSETS + '/thumb-xli-anomaly.png',
       },
       {
         id: 2,
         text: `RXRX raw P/C: 0.38 (extreme bullish).\nFiltered: 2.37 (bearish).\n\n84% of call volume was <$0.10 OTM lottery tickets.\nSignal completely inverted after filtering.\n\n#options #ClaudeCode #investing`,
         label: 'RXRX P/C Filter Story',
-        imagePath: ASSETS + '/thumb-rxrx-inverted.svg',
+        imagePath: ASSETS + '/thumb-rxrx-inverted.png',
       },
       {
         id: 3,
         text: `Most options scanners show raw Put/Call ratio.\n\nThe problem: $0.01 OTM calls inflate it massively — lottery tickets, not real positioning.\n\nFilter them out and the signal changes. XLI went from 0.53 to 5.32.\n\n#options #algotrading`,
         label: 'P/C Filter Concept',
-        imagePath: ASSETS + '/thumb-6-skills.svg',
+        imagePath: ASSETS + '/thumb-6-skills.png',
       },
     ];
     json(res, drafts);
