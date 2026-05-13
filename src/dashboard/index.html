@@ -1589,19 +1589,37 @@ async function loadBrowserPostDrafts() {
     const el = document.getElementById('bp-drafts');
     if (!el) return;
     if (!drafts || !drafts.length) { el.innerHTML = '<div class="loading">초안 없음</div>'; return; }
-    el.innerHTML = drafts.map(d => `
-      <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;" onclick="selectBpDraft(${JSON.stringify(d.text).replace(/</g,'&lt;')})">
+    el.innerHTML = drafts.map(d => {
+      const imgName = d.imagePath ? d.imagePath.split('/').pop() : null;
+      return `
+      <div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;" onclick="selectBpDraft(${JSON.stringify(d.text).replace(/</g,'&lt;')}, ${JSON.stringify(d.imagePath || '').replace(/</g,'&lt;')})">
         <div style="font-size:12px;color:#fb923c;font-weight:700;margin-bottom:6px;">${d.label}</div>
         <div style="font-size:12px;color:#aaa;white-space:pre-wrap;line-height:1.5;">${d.text.replace(/</g,'&lt;')}</div>
-        <div style="font-size:11px;color:#555;margin-top:6px;">${d.text.length} / 280자 · 클릭하여 편집기로 불러오기</div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span style="font-size:11px;color:#555;">${d.text.length} / 280자 · 클릭하여 편집기로 불러오기</span>
+          ${imgName ? `<span style="font-size:11px;color:#3fb950;">📎 ${imgName}</span>` : '<span style="font-size:11px;color:#f87171;">⚠️ 이미지 없음</span>'}
+        </div>
       </div>
-    `).join('');
+    `}).join('');
   } catch {}
 }
 
-function selectBpDraft(text) {
+function selectBpDraft(text, imagePath) {
   const ta = document.getElementById('bp-text');
   if (ta) { ta.value = text; updateBpCharCount(); }
+  // Store imagePath for submission
+  const btn = document.getElementById('bp-submit-btn');
+  if (btn) btn.dataset.imagePath = imagePath || '';
+  // Show selected image info
+  const info = document.getElementById('bp-image-info');
+  if (info) {
+    if (imagePath) {
+      const name = imagePath.split('/').pop();
+      info.innerHTML = `<span style="color:#3fb950;font-size:12px;">📎 첨부 이미지: ${name}</span>`;
+    } else {
+      info.innerHTML = '<span style="color:#f87171;font-size:12px;">⚠️ 이미지 없음 — 이미지 없이는 포스팅 불가</span>';
+    }
+  }
 }
 
 function clearBpText() {
@@ -1639,11 +1657,14 @@ async function submitBrowserPost() {
   btn.textContent = '포스팅 중...';
   res.style.display = 'none';
   try {
-    const data = await fetch('/api/browser-post', {
+    const btn2 = document.getElementById('bp-submit-btn');
+    const imagePath = btn2?.dataset.imagePath || '';
+    const resp = await fetch('/api/browser-post', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    }).then(r => r.json());
+      body: JSON.stringify({ text, imagePath }),
+    });
+    const data = await resp.json();
     if (data.ok) {
       res.style.display = 'block';
       res.innerHTML = '<div style="background:#0a3a0a;border:1px solid #4ade80;border-radius:8px;padding:10px 14px;color:#4ade80;font-size:13px;font-weight:600;">포스팅 완료!</div>';
@@ -1652,7 +1673,18 @@ async function submitBrowserPost() {
       loadBpHistory();
     } else {
       res.style.display = 'block';
-      res.innerHTML = `<div style="background:#3a0a0a;border:1px solid #f87171;border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;">실패: ${data.error || '알 수 없는 오류'}</div>`;
+      const errMsg = data.error || '알 수 없는 오류';
+      // Show manual fallback if browser/API error
+      res.innerHTML = `<div style="background:#3a0a0a;border:1px solid #f87171;border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;">
+        실패: ${errMsg}
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #5a1a1a;color:#aaa;font-size:12px;">
+          <strong style="color:#facc15;">수동 복붙 사용:</strong><br>
+          1. <a href="https://x.com/compose/post" target="_blank" style="color:#60a5fa;">x.com/compose/post</a> 열기<br>
+          2. 아래 텍스트 복붙<br>
+          3. 이미지 첨부 후 게시
+          <div style="margin-top:8px;background:#1a0a0a;border:1px solid #444;border-radius:6px;padding:8px;font-family:monospace;color:#e0e0e0;white-space:pre-wrap;font-size:11px;">${text.replace(/</g,'&lt;')}</div>
+        </div>
+      </div>`;
     }
   } catch (e) {
     res.style.display = 'block';
