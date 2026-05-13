@@ -84,6 +84,8 @@ Free tier covers news collection and basic analysis.
 **Full bundle — $29 one-time**: Investment-grade analysis (portfolio impact scoring, options flow correlation, earnings catalyst detection), Korean briefing format, Telegram auto-delivery.
 → https://jaehyunpark.gumroad.com/l/tcyahy
 
+Install via Agensi: https://www.agensi.io/skills/news-sentiment-engine-ai-tech-news-analyzer
+
 ## Author
 
 Core module from a production news analysis engine processing 50+ articles daily. The full pipeline runs on a cron schedule and delivers via Telegram before market open.

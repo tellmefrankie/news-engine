@@ -70,6 +70,8 @@ Free version uses basic scenario modeling with manual probability inputs.
 **Full bundle — $29 one-time**: Polygon.io options data integration, real/lottery separation, per-expiry analysis, anomaly detection, automatic probability weighting from live data.
 → https://jaehyunpark.gumroad.com/l/tcyahy
 
+Install via Agensi: https://www.agensi.io/skills/ev-calculator-expected-value-stock-analyzer
+
 ## Author
 
 Production EV engine used daily for real portfolio decisions. The TEM example above is real — the EV turned negative the morning before the stop-loss was hit.
