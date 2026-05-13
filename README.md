@@ -1,6 +1,6 @@
 # AI Investment Skills for Claude Code
 
-7 Claude Code skills — investment analysis, git workflow, and API cost management. Built from 6 months of daily portfolio management — not a demo.
+10 Claude Code skills — investment analysis, dev workflow, and debugging tools. All free. Built from 6 months of daily portfolio management — not a demo.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
@@ -96,6 +96,18 @@ Generates a complete PR description from git diff: summary bullets, test plan ch
 ### 7. Claude API Cost Tracker
 
 Breaks down Anthropic API spend by model, project, and task type. Flags expensive calls and identifies which tasks can switch from Opus to Sonnet.
+
+### 8. Commit Roast
+
+A brutal but accurate code review of your git commit history. Calls out vague messages, "fix the fix" chains, and 3 AM commit spikes — then gives 3 genuine suggestions. 30% comedy, 70% real feedback.
+
+### 9. Context Budget Tracker
+
+Know how much context window you have left before Claude loses memory mid-task. Estimates tokens used, shows biggest consumers, warns before you hit 85%. Includes checkpoint mode: generates a CHECKPOINT.md to paste into a fresh session.
+
+### 10. Debug Trail
+
+Automatically documents your debugging session as you go. Tracks hypotheses, dead ends, and discoveries. When the bug is fixed, generates a complete structured report — dead ends included, to prevent the next person repeating them.
 
 ---
 
