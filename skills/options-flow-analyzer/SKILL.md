@@ -21,13 +21,35 @@ For each ticker:
 - Anomaly detection: P/C shifts >0.3, Call OI surges >30%, IV spikes >20%
 - Sentiment classification: Bullish/Bearish/Neutral with confidence
 
+## Example Output
+
+```
+Options Flow Summary — 2026-05-13
+
+HOLDINGS:
+CEG  $299.69 | Raw P/C: 1.06 | Lottery: 61% | Adj P/C: 2.72  ⚠️ BEARISH (was neutral raw)
+IREN $55.15  | Raw P/C: 0.83 | Lottery: 34% | Adj P/C: 0.55  ✅ BULLISH
+KTOS $56.99  | Raw P/C: 0.53 | Lottery: 28% | Adj P/C: 0.38  🔥 EXTREME BULLISH
+RXRX $3.26   | Raw P/C: 0.38 | Lottery: 84% | Adj P/C: 2.37  ⚠️ BEARISH (was extreme bullish raw)
+TEM  $48.46  | Raw P/C: 0.50 | Lottery: 41% | Adj P/C: 0.85  ➡️ NEUTRAL
+
+SECTORS:
+XLI  | Raw P/C: 5.32 | Lottery:  8% | Adj P/C: 4.89  🔴 INSTITUTIONAL HEDGE
+SPY  | Raw P/C: 0.44 | Lottery: 12% | Adj P/C: 0.40  🔥 EXTREME BULLISH
+
+ANOMALIES:
+⚠️ XLI: P/C 5.32 vs 30-day baseline 0.87 — 4.5 std deviations above normal
+⚠️ RXRX: 84% lottery calls — raw P/C signal completely inverted after filtering
+```
+
 ## Configuration
 
 ```
-Analyze options flow for: AAPL, NVDA, TSLA, AMZN
-Separate real vs lottery calls.
-Show per-expiry breakdown.
-Flag any anomalies in the last 24 hours.
+Analyze options flow for my watchlist:
+Holdings: CEG, IREN, KTOS, RXRX, TEM
+Sectors: SPY, QQQ, XLI, XLK
+Separate real vs lottery calls (threshold: premium < $0.10, delta < 0.05).
+Flag anomalies vs 30-day baseline.
 ```
 
 ## Requirements
