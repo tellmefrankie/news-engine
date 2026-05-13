@@ -23,6 +23,7 @@
     "finance": "tsx src/finance/index.ts",
     "finance:snapshot": "tsx src/finance/index.ts --snapshot",
     "finance:report": "tsx src/finance/index.ts --report",
+    "thumbnails:png": "tsx src/growth/svg-to-png.ts",
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
