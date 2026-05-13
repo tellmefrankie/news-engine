@@ -1,6 +1,6 @@
 # AI Investment Skills for Claude Code
 
-4 production-tested Claude Code skills for real-money investment analysis. Built from 6 months of daily portfolio management — not a demo.
+7 Claude Code skills — investment analysis, git workflow, and API cost management. Built from 6 months of daily portfolio management — not a demo.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
@@ -72,6 +72,30 @@ No checking required. The skill watches so you don't have to.
 ### 4. Portfolio Greeks Dashboard
 
 Tracks delta exposure, sector concentration, and leverage across all open positions. Answers: "If the market drops 5% today, what happens to my book?"
+
+### 5. Git Standup Generator
+
+Reads your git log for the last 24 hours and generates a clean standup summary — yesterday / today / blockers. Works across multiple repos.
+
+```
+YESTERDAY
+- Shipped lottery-call filter for options analyzer (6 commits)
+- Fixed CI failure on awesome-list PR
+
+TODAY
+- Post-mortem write-up: XLI anomaly methodology
+
+BLOCKERS
+- dev.to daily publish limit — 3 articles queued for tomorrow
+```
+
+### 6. PR Review Prep
+
+Generates a complete PR description from git diff: summary bullets, test plan checklist, risk assessment, and files needing careful review.
+
+### 7. Claude API Cost Tracker
+
+Breaks down Anthropic API spend by model, project, and task type. Flags expensive calls and identifies which tasks can switch from Opus to Sonnet.
 
 ---
 
