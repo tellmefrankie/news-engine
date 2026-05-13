@@ -74,6 +74,52 @@ pnpm build
 pnpm start
 ```
 
+## Terminal Output Examples
+
+**Options sentiment scan (`pnpm options:sentiment`):**
+
+```
+📊 옵션 센티먼트 (Massive API)
+
+보유:
+CEG  $299.69 | P/C 1.06 ⚠️  약한 베어리시 | IV 110.26%
+IREN $55.15  | P/C 0.83 ➡️  중립-불리시   | IV 167.72%
+KTOS $56.99  | P/C 0.53 ✅  불리시        | IV 170.1%
+RXRX $3.26   | P/C 0.38 🔥  극단 불리시   | IV 189.58%
+TEM  $48.46  | P/C 0.50 ✅  불리시        | IV 96.99%
+
+섹터:
+XLI | P/C 5.32 🔴 베어리시
+SPY | P/C 0.44 🔥 극단 불리시
+QQQ | P/C 0.54 ✅ 불리시
+```
+
+**Price monitor (`pnpm monitor:once`):**
+
+```
+[Monitor] PRE-MARKET — checking prices...
+📊 가격 체크 결과:
+  IREN: $56.93 (+3.23%) | 손절 $39    | 여유 46.0% ✅
+  TEM:  $47.19 (-2.62%) | 손절 $49.75 | 여유 -5.1% 🚨 손절!
+  RXRX: $3.15  (-3.37%) | 손절 $2.85  | 여유 10.5% ✅
+  KTOS: $57.47 (+0.84%) | 손절 $52    | 여유 10.5% ✅
+  CEG:  $294.81(-1.63%) | 손절 $253   | 여유 16.5% ✅
+[Monitor] ALERT: 🚨 손절 알림: TEM $47.19 — 손절가 $49.75 도달. 장 시작 매도
+```
+
+**Runway snapshot (`pnpm finance:snapshot`):**
+
+```
+=== 런웨이 스냅샷 ===
+날짜:        2026-05-13
+상태:        GREEN
+런웨이:      ∞ (흑자)
+월 수입:     2,500,000원
+월 지출:       310,000원
+주식 평가액: 29,200,000원
+현금:         8,000,000원
+```
+
 ## Telegram Output Example
 
 ```

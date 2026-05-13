@@ -1,6 +1,10 @@
 node_modules/
 dist/
-data/news.db
+data/
 .env
 *.log
 .DS_Store
+
+# Internal screenshots — never commit
+content/screenshots/dashboard-*.png
+content/screenshots/agensi-*.png
