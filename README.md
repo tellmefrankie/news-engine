@@ -171,6 +171,24 @@ src/
     └── index.ts          # TypeScript type definitions
 ```
 
+## AI Investment Skills Bundle
+
+This project is the core of a larger Claude Code skills suite for investment analysis — built from 6+ months of real portfolio management.
+
+**What's in the bundle ($29 one-time):**
+- Options Flow Analyzer — real vs lottery call separation (the key insight)
+- Investment Briefing Agent — 9-wave daily analysis pipeline
+- Price Monitor & Alert — stop-loss/take-profit via Telegram
+- Multi-Agent Orchestrator — coordinate parallel analysis agents
+- EV Calculator — probability-weighted position sizing
+- News Sentiment Engine — this project, production version
+
+**Free tier** (this repo + GitHub): News engine source code, basic options flow, EV calculator basics.
+
+**[Get the full bundle on Gumroad — $29](https://jaehyunpark.gumroad.com/l/tcyahy)**
+
+---
+
 ## License
 
 MIT
