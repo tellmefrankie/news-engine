@@ -1,235 +1,151 @@
-# News Engine — AI Investment Skills for Claude Code
+# AI Investment Skills for Claude Code
 
-> **Production-tested Claude Code skills for investment analysis.** Built from 6+ months of live portfolio management — not a demo.
+4 production-tested Claude Code skills for real-money investment analysis. Built from 6 months of daily portfolio management — not a demo.
 
-**[Get the full bundle on Gumroad — $29 one-time →](https://jaehyunpark.gumroad.com/l/tcyahy)**
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)](https://nodejs.org/)
 
 ---
 
-## What this catches that standard tools miss
+## What this caught last week
 
 ```
 Options Flow Summary — 2026-05-13
 
-SPY  P/C: 0.44  [EXTREME BULLISH]
-QQQ  P/C: 0.54  [BULLISH]
-XLI  P/C: 5.32  [OUTLIER — INSTITUTIONAL HEDGE SIGNAL]
-RXRX P/C: 0.35  [84% LOTTERY CALLS — signal is noise]
+SPY  P/C: 0.44   [EXTREME BULLISH]
+QQQ  P/C: 0.54   [BULLISH]
+TEM  P/C: 0.50   [BULLISH]
+RXRX P/C: 0.38   [EXTREME BULLISH]
+IREN P/C: 0.83   [NEUTRAL]
+XLI  P/C: 5.32   [OUTLIER — INSTITUTIONAL HEDGE SIGNAL] ⚠️
 ```
 
-XLI at 5.32 (normal range: 0.5–1.2) = institutional-scale downside protection on industrials.
-RXRX at 0.35 looks "extremely bullish" but 84% of calls were $0.01 OTM lottery tickets — no real conviction.
+XLI's normal range is 0.5–1.2. At 5.32, someone is buying institutional-scale downside protection on industrials while the broad market signals bullish. The scanner caught it before market open.
 
-The **real/lottery call separation** is the core insight this repo is built around.
-[Read the full breakdown on dev.to →](https://dev.to/tellmefrankie/i-built-a-real-time-options-flow-scanner-with-claude-code-and-it-caught-a-signal-i-almost-missed-3lm6)
+[Full write-up →](https://dev.to/tellmefrankie/when-the-market-whispers-through-sector-etfs-the-xli-pc-532-signal-14l8)
 
 ---
 
-## Skills included
+## Skills
 
-| Skill | Free | Full ($29) |
-|-------|------|-----------|
-| News Sentiment Engine (this repo) | Full source | — |
-| Options Flow Analyzer | 3 tickers, basic P/C | Unlimited + real/lottery separation + anomaly detection |
-| Investment Briefing Agent | Waves 1-2 only | All 9 waves + anti-narrative harness |
-| Price Monitor & Alert | Up to 3 tickers | Unlimited + pre/after-hours coverage |
-| Multi-Agent Orchestrator | 2-agent workflows | Unlimited agents + synthesis templates |
+### 1. Options Flow Scanner
 
-**[Full bundle — $29 one-time →](https://jaehyunpark.gumroad.com/l/tcyahy)**
+Pulls options chain data across your watchlist, calculates put/call ratios, and flags statistical outliers against each instrument's own historical baseline.
+
+```
+< 0.40  → EXTREME BULLISH
+0.40–0.60 → BULLISH
+0.60–1.20 → NEUTRAL
+1.20–2.00 → CAUTIOUS
+> 2.00  → BEARISH / HEDGE SIGNAL
+> 3.00  → INSTITUTIONAL HEDGE SIGNAL
+```
+
+Key: outlier detection uses per-instrument baselines, not fixed thresholds. XLI at 5.32 fires because it's 4x above XLI's own historical average — not just because 5.32 is "high."
+
+### 2. Stop-Loss Monitor
+
+Polls your positions every 15 minutes during market hours. Fires a Telegram alert when price crosses a threshold.
+
+```
+TEM  current: $48.67 → stop: $49.75  [WATCH]
+IREN current: $51.20 → stop: $50.00  [OK]
+```
+
+No checking required. The skill watches so you don't have to.
+
+### 3. Daily Investment Briefing
+
+9-wave morning analysis via Claude API. Runs in 90 seconds, outputs a structured Telegram message.
+
+1. Overnight macro (futures, global markets)
+2. Options flow (from Skill #1)
+3. Sentiment overlay
+4. Technical setup (support/resistance)
+5. Risk assessment
+6. Opportunity scan
+7. Alert triggers
+8. Trade ideas
+9. Execution checklist
+
+### 4. Portfolio Greeks Dashboard
+
+Tracks delta exposure, sector concentration, and leverage across all open positions. Answers: "If the market drops 5% today, what happens to my book?"
 
 ---
 
-## News pipeline architecture
+## Quick Start (Free)
 
-AI/테크 뉴스를 자동 수집하고 Claude AI로 분석한 뒤 텔레그램 채널로 매일 아침 브리핑을 발송하는 파이프라인.
-
-## Architecture
-
-```
-[뉴스 소스]          [수집기]          [분석기]         [발송기]
-RSS Feeds ────→ Collector ────→ Analyzer ────→ Publisher
-Naver API ──┘    (수집+중복제거)   (Claude API)    (Telegram)
-                      │                │              │
-                      └────── SQLite DB ──────────────┘
-
-                    [스케줄러]
-                    node-cron — 매일 06:00 KST
-```
-
-## Features
-
-- **RSS 수집**: TechCrunch, The Verge, Ars Technica, Hacker News
-- **네이버 뉴스 API**: AI, 인공지능, 테크, IT 키워드 검색
-- **Claude AI 분석**: 50건 → 상위 5건 필터링, 한국어 요약/태그/호악재/영향도/총평
-- **텔레그램 발송**: 카드 포맷 브리핑 메시지
-- **스케줄러**: node-cron으로 매일 아침 6시 자동 실행
-- **SQLite**: 수집/분석 데이터 영구 저장
-
-## Tech Stack
-
-- Node.js + TypeScript (strict)
-- rss-parser, @anthropic-ai/sdk, grammy, better-sqlite3, node-cron
-- tsup (build), tsx (dev)
-
-## Setup
+The Options Flow Scanner and Stop-Loss Monitor basics are free:
 
 ```bash
-# Install dependencies
+git clone https://github.com/tellmefrankie/news-engine
+cd news-engine
 pnpm install
-
-# Copy environment variables
 cp .env.example .env
-# Fill in your API keys in .env
+# Add ANTHROPIC_API_KEY + POLYGON_API_KEY
+pnpm run:now
 ```
 
-### Required Environment Variables
+### Required
 
 | Variable | Description |
 |----------|-------------|
 | `ANTHROPIC_API_KEY` | Claude API key |
-| `NAVER_CLIENT_ID` | Naver Search API client ID |
-| `NAVER_CLIENT_SECRET` | Naver Search API client secret |
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token from @BotFather |
-| `TELEGRAM_CHANNEL_ID` | Telegram channel ID (e.g., `@channel_name` or `-100xxx`) |
+| `POLYGON_API_KEY` | Options data (Polygon.io — free tier works with `--delayed` flag) |
+| `TELEGRAM_BOT_TOKEN` | Alerts delivery |
+| `TELEGRAM_CHAT_ID` | Your chat or channel ID |
 
-## Usage
+---
 
-```bash
-# Run full pipeline immediately
-pnpm run:now
-
-# Collect news only
-pnpm dev -- --collect-only
-
-# Analyze only (requires collected articles)
-pnpm dev -- --analyze-only
-
-# Publish only (requires analyzed articles)
-pnpm dev -- --publish-only
-
-# Start scheduler (runs daily at 06:00 KST)
-pnpm dev
-
-# Production
-pnpm build
-pnpm start
-```
-
-## Terminal Output Examples
-
-**Options sentiment scan (`pnpm options:sentiment`):**
+## Architecture
 
 ```
-📊 옵션 센티먼트 (Massive API)
+[Options Data]     [Price Feeds]     [Claude API]
+Polygon.io ──→ Scanner ──→ Briefing Generator ──→ Telegram
+                  │                                    │
+                  └──────────── SQLite DB ─────────────┘
 
-보유:
-CEG  $299.69 | P/C 1.06 ⚠️  약한 베어리시 | IV 110.26%
-IREN $55.15  | P/C 0.83 ➡️  중립-불리시   | IV 167.72%
-KTOS $56.99  | P/C 0.53 ✅  불리시        | IV 170.1%
-RXRX $3.26   | P/C 0.38 🔥  극단 불리시   | IV 189.58%
-TEM  $48.46  | P/C 0.50 ✅  불리시        | IV 96.99%
-
-섹터:
-XLI | P/C 5.32 🔴 베어리시
-SPY | P/C 0.44 🔥 극단 불리시
-QQQ | P/C 0.54 ✅ 불리시
+Scheduler: node-cron, runs daily 06:30 KST
 ```
 
-**Price monitor (`pnpm monitor:once`):**
+Single Node.js process. No Lambda, no queue, no Kubernetes. `pm2 start` and forget.
 
-```
-[Monitor] PRE-MARKET — checking prices...
-📊 가격 체크 결과:
-  IREN: $56.93 (+3.23%) | 손절 $39    | 여유 46.0% ✅
-  TEM:  $47.19 (-2.62%) | 손절 $49.75 | 여유 -5.1% 🚨 손절!
-  RXRX: $3.15  (-3.37%) | 손절 $2.85  | 여유 10.5% ✅
-  KTOS: $57.47 (+0.84%) | 손절 $52    | 여유 10.5% ✅
-  CEG:  $294.81(-1.63%) | 손절 $253   | 여유 16.5% ✅
-[Monitor] ALERT: 🚨 손절 알림: TEM $47.19 — 손절가 $49.75 도달. 장 시작 매도
-```
+---
 
-**Runway snapshot (`pnpm finance:snapshot`):**
+## Full Bundle
 
-```
-=== 런웨이 스냅샷 ===
-날짜:        2026-05-13
-상태:        GREEN
-런웨이:      ∞ (흑자)
-월 수입:     2,500,000원
-월 지출:       310,000원
-주식 평가액: 29,200,000원
-현금:         8,000,000원
-```
+The free tier covers the scanner and basic stop-loss alerts. The $29 bundle adds:
 
-## Telegram Output Example
+- Full 9-wave briefing with all Claude prompts
+- Telegram alert formatting + multi-chat support  
+- Configuration templates for different portfolio types
+- Portfolio Greeks dashboard
+- Priority updates
 
-```
-📰 AI 테크 뉴스 브리핑
-2026.03.25 (화) 오전 6시
+**[$29 one-time — no subscription →](https://jaehyunpark.gumroad.com/l/tcyahy)**
 
-━━━━━━━━━━━━━━━━━
+If the price goes up, existing buyers keep the current version.
 
-1️⃣ OpenAI, GPT-5 공개 임박
-📊 영향도: ⭐⭐⭐⭐⭐ (5/5)
-🏷 #AI #LLM #OpenAI
-📈 호재
+---
 
-요약: OpenAI가 차세대 모델 GPT-5를 ...
+## Contributing
 
-💬 총평: 한국 AI 스타트업 생태계에 ...
+Open issues:
 
-🔗 https://...
+- [#10 — Polygon.io free tier support](https://github.com/tellmefrankie/news-engine/issues/10) ← good first issue
+- [#12 — Expand sector ETF watchlist (XLF, XLK, XLE)](https://github.com/tellmefrankie/news-engine/issues/12) ← good first issue  
+- [#13 — Discord webhook support](https://github.com/tellmefrankie/news-engine/issues/13) ← help wanted
 
-━━━━━━━━━━━━━━━━━
-
-Powered by NewsEngine | CodeFoundry
-```
-
-## Project Structure
-
-```
-src/
-├── index.ts              # Entry point (scheduler/CLI)
-├── pipeline.ts           # Pipeline orchestrator
-├── collector/
-│   ├── index.ts          # Unified collector
-│   ├── rss.ts            # RSS feed collector
-│   └── naver.ts          # Naver News API collector
-├── analyzer/
-│   ├── index.ts          # Analyzer main
-│   ├── filter.ts         # Claude importance filter
-│   └── analyze.ts        # Claude detailed analysis
-├── publisher/
-│   ├── index.ts          # Publisher main
-│   └── telegram.ts       # Telegram message builder + sender
-├── db/
-│   ├── index.ts          # SQLite operations
-│   └── schema.ts         # Table definitions
-├── config/
-│   ├── sources.ts        # RSS source list
-│   └── prompts.ts        # Claude prompt templates
-└── types/
-    └── index.ts          # TypeScript type definitions
-```
-
-## AI Investment Skills Bundle
-
-This project is the core of a larger Claude Code skills suite for investment analysis — built from 6+ months of real portfolio management.
-
-**What's in the bundle ($29 one-time):**
-- Options Flow Analyzer — real vs lottery call separation (the key insight)
-- Investment Briefing Agent — 9-wave daily analysis pipeline
-- Price Monitor & Alert — stop-loss/take-profit via Telegram
-- Multi-Agent Orchestrator — coordinate parallel analysis agents
-- EV Calculator — probability-weighted position sizing
-- News Sentiment Engine — this project, production version
-
-**Free tier** (this repo + GitHub): News engine source code, basic options flow, EV calculator basics.
-
-**[Get the full bundle on Gumroad — $29](https://jaehyunpark.gumroad.com/l/tcyahy)**
+PRs welcome.
 
 ---
 
 ## License
 
 MIT
+
+---
+
+*Not financial advice. Personal tooling. Do your own research.*
