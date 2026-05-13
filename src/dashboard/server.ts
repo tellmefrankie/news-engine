@@ -373,12 +373,12 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     const drafts = [
       {
         id: 1,
-        text: `I built 6 Claude Code skills for investment analysis — open source.\n\nMy scanner caught XLI P/C at 5.32 (normal: 0.5-1.2). 98% of CEG's call volume was $0.01 lottery tickets.\n\nRaw P/C said "neutral." Adjusted P/C said "extremely bearish."\n\nFree on GitHub: github.com/tellmefrankie/ai-investment-skills\n\n#ClaudeCode #BuildInPublic #algotrading`,
+        text: `XLI options P/C hit 5.32 last week. Normal range: 0.5-1.2.\n\nAfter filtering $0.01 lottery calls: still 4.89. Real institutional hedging.\n\nBuilt the scanner with Claude Code. Open source.\ngithub.com/tellmefrankie/ai-investment-skills\n\n#ClaudeCode #options #algotrading`,
         label: 'XLI/CEG Scanner Story',
       },
       {
         id: 2,
-        text: `Most options scanners give you raw Put/Call ratio.\n\nMine filters out $0.01 lottery calls before computing it.\n\nDifference: XLI reads 0.53 (neutral) vs 5.32 (extremely bearish).\n\nOne line of code. Completely different signal.\n\ngithub.com/tellmefrankie/ai-investment-skills\n\n#options #investing #ClaudeCode`,
+        text: `RXRX raw P/C: 0.38 (extreme bullish).\nFiltered: 2.37 (bearish).\n\n84% of call volume was <$0.10 OTM noise.\nSignal completely inverted.\n\nClaude Code skill that does this:\ngithub.com/tellmefrankie/ai-investment-skills\n\n#options #ClaudeCode`,
         label: 'P/C Ratio Filter Story',
       },
       {
