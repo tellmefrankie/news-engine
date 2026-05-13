@@ -1,4 +1,45 @@
-# News Engine
+# News Engine — AI Investment Skills for Claude Code
+
+> **Production-tested Claude Code skills for investment analysis.** Built from 6+ months of live portfolio management — not a demo.
+
+**[Get the full bundle on Gumroad — $29 one-time →](https://jaehyunpark.gumroad.com/l/tcyahy)**
+
+---
+
+## What this catches that standard tools miss
+
+```
+Options Flow Summary — 2026-05-13
+
+SPY  P/C: 0.44  [EXTREME BULLISH]
+QQQ  P/C: 0.54  [BULLISH]
+XLI  P/C: 5.32  [OUTLIER — INSTITUTIONAL HEDGE SIGNAL]
+RXRX P/C: 0.35  [84% LOTTERY CALLS — signal is noise]
+```
+
+XLI at 5.32 (normal range: 0.5–1.2) = institutional-scale downside protection on industrials.
+RXRX at 0.35 looks "extremely bullish" but 84% of calls were $0.01 OTM lottery tickets — no real conviction.
+
+The **real/lottery call separation** is the core insight this repo is built around.
+[Read the full breakdown on dev.to →](https://dev.to/tellmefrankie/i-built-a-real-time-options-flow-scanner-with-claude-code-and-it-caught-a-signal-i-almost-missed-3lm6)
+
+---
+
+## Skills included
+
+| Skill | Free | Full ($29) |
+|-------|------|-----------|
+| News Sentiment Engine (this repo) | Full source | — |
+| Options Flow Analyzer | 3 tickers, basic P/C | Unlimited + real/lottery separation + anomaly detection |
+| Investment Briefing Agent | Waves 1-2 only | All 9 waves + anti-narrative harness |
+| Price Monitor & Alert | Up to 3 tickers | Unlimited + pre/after-hours coverage |
+| Multi-Agent Orchestrator | 2-agent workflows | Unlimited agents + synthesis templates |
+
+**[Full bundle — $29 one-time →](https://jaehyunpark.gumroad.com/l/tcyahy)**
+
+---
+
+## News pipeline architecture
 
 AI/테크 뉴스를 자동 수집하고 Claude AI로 분석한 뒤 텔레그램 채널로 매일 아침 브리핑을 발송하는 파이프라인.
 
