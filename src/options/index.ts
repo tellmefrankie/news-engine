@@ -54,7 +54,10 @@ export async function runOptionsSnapshot(options: {
     if (anomalies.length > 0) {
       const alertMsg = formatAnomalyAlerts(anomalies);
       console.log(alertMsg);
-      // TODO: Send to Telegram when bot token is configured
+      if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHANNEL_ID) {
+        const { sendToTelegram } = await import('../publisher/telegram.js');
+        await sendToTelegram(alertMsg).catch((e: unknown) => console.error('[Options] Telegram send failed:', e));
+      }
     } else {
       console.log('[Options] No anomalies detected');
     }
