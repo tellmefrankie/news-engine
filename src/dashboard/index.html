@@ -829,9 +829,19 @@ Fees: Direct 10% + 50¢ + 2.9% + 30¢ | Discover 30%</div>
 
 <!-- BROWSER POST TAB -->
 <div class="tab-content" id="tab-browser-post">
-<div style="background:#1a0f00;border:2px solid #fb923c;border-radius:12px;padding:14px 20px;margin-bottom:20px;">
+<div style="background:#1a0000;border:2px solid #f87171;border-radius:12px;padding:14px 20px;margin-bottom:12px;">
+  <div style="color:#f87171;font-size:13px;font-weight:700;margin-bottom:8px;">필수 프로세스 — Discussion 검증 없이 포스팅 금지</div>
+  <div style="font-size:12px;color:#aaa;line-height:1.9;">
+    <span style="color:#facc15;font-weight:700;">1.</span> BRAVO/CHARLIE가 초안 작성 → Discussion 탭에 게시<br>
+    <span style="color:#facc15;font-weight:700;">2.</span> 3개 팀 이상 +1 승인<br>
+    <span style="color:#facc15;font-weight:700;">3.</span> MARKETING이 광고 냄새 체크 — <span style="color:#f87171;">링크 1개라도 있으면 거부</span><br>
+    <span style="color:#facc15;font-weight:700;">4.</span> 승인 완료 후 아래에서 포스팅<br>
+    <span style="color:#facc15;font-weight:700;">5.</span> 반응 모니터링 + 답글
+  </div>
+</div>
+<div style="background:#1a0f00;border:1px solid #fb923c;border-radius:10px;padding:12px 18px;margin-bottom:20px;">
   <div style="color:#fb923c;font-size:12px;font-weight:700;letter-spacing:1px;margin-bottom:4px;">CEO 직접 실행 — X (Twitter) 브라우저 자동 포스팅</div>
-  <div style="color:#aaa;font-size:12px;">Chrome 프로필의 로그인 세션을 사용합니다. 실행 전 Chrome이 닫혀있어야 합니다.</div>
+  <div style="color:#aaa;font-size:12px;">Chrome 프로필의 <strong style="color:#e0e0e0;">로그인 세션</strong>을 사용합니다 — X API 크레딧 불필요. 실행 전 Chrome이 닫혀있어야 합니다.</div>
 </div>
 
 <div class="card" style="margin-bottom:16px;">
@@ -1606,8 +1616,10 @@ function updateBpCharCount() {
   const cc = document.getElementById('bp-char-count');
   if (!ta || !cc) return;
   const len = ta.value.length;
-  cc.textContent = `${len} / 280`;
-  cc.style.color = len > 280 ? '#f87171' : len > 240 ? '#facc15' : '#666';
+  const text = ta.value;
+  const hasGumroad = text.includes('gumroad') || text.includes('$29');
+  cc.textContent = `${len} / 280${hasGumroad ? ' ⚠️ Gumroad/가격 포함' : ''}`;
+  cc.style.color = len > 280 ? '#f87171' : hasGumroad ? '#fb923c' : len > 240 ? '#facc15' : '#666';
 }
 
 async function submitBrowserPost() {
@@ -1618,6 +1630,10 @@ async function submitBrowserPost() {
   const text = ta.value.trim();
   if (!text) { alert('트윗 내용을 입력하세요.'); return; }
   if (text.length > 280) { alert('280자 초과. 줄여주세요.'); return; }
+  // CEO 규칙: 댓글/리플라이에 Gumroad 유료 링크 금지
+  if (text.includes('gumroad') || text.includes('$29')) {
+    if (!confirm('⚠️ Gumroad 링크 또는 가격($29)이 포함되어 있습니다.\n\nX 댓글 정책: 유료 링크는 본인 홍보 트윗에만 허용.\n댓글/리플라이라면 GitHub/Agensi 링크로 교체하세요.\n\n그래도 포스팅할까요?')) return;
+  }
   if (!confirm(`아래 내용을 X에 포스팅할까요?\n\n"${text}"`)) return;
   btn.disabled = true;
   btn.textContent = '포스팅 중...';
