@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect x="0" y="0" width="1200" height="5" fill="#f85149" />
+  <rect x="60" y="80" width="4" height="120" fill="#f85149" rx="2" />
+
+  <!-- Tag -->
+  <rect x="80" y="78" width="210" height="32" rx="6" fill="#21262d" />
+  <text x="185" y="99" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e" text-anchor="middle" letter-spacing="1">STOP-LOSS MONITOR</text>
+
+  <!-- Headline -->
+  <text x="80" y="162" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="56" font-weight="700" fill="#f0f6fc">Real-time alerts before</text>
+  <text x="80" y="228" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="56" font-weight="700" fill="#f85149">the market opens.</text>
+  <text x="80" y="285" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="30" fill="#8b949e">Stop-loss + take-profit via Telegram. No API key needed.</text>
+
+  <!-- Terminal window -->
+  <rect x="80" y="325" width="650" height="220" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1" />
+  <rect x="80" y="325" width="650" height="36" rx="10" fill="#21262d" />
+  <rect x="80" y="351" width="650" height="10" fill="#21262d" />
+  <circle cx="108" cy="343" r="6" fill="#f85149" />
+  <circle cx="130" cy="343" r="6" fill="#f0883e" />
+  <circle cx="152" cy="343" r="6" fill="#3fb950" />
+  <text x="355" y="346" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#8b949e" text-anchor="middle">monitor — bash</text>
+
+  <text x="108" y="385" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#3fb950">[Monitor] PRE-MARKET — checking prices...</text>
+  <text x="108" y="408" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#f0f6fc">Price Check — 08:47 ET</text>
+  <text x="108" y="432" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#3fb950">  IREN: $56.93 (+3.23%) | stop $39.00 | +46.0% </text>
+  <text x="108" y="452" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#f85149">  TEM:  $47.19 (-2.62%) | stop $49.75 | -5.1% ALERT</text>
+  <text x="108" y="472" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#3fb950">  RXRX: $3.15  (-3.37%) | stop $2.85  | +10.5% </text>
+  <text x="108" y="492" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#3fb950">  KTOS: $57.47 (+0.84%) | stop $52.00 | +10.5% </text>
+  <text x="108" y="520" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#f0883e">[Monitor] ALERT sent → Telegram: TEM $47.19 below stop</text>
+
+  <!-- Telegram card -->
+  <rect x="780" y="325" width="350" height="220" rx="10" fill="#161b22" stroke="#1d9bf0" stroke-width="1" />
+  <text x="955" y="358" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="14" font-weight="600" fill="#1d9bf0" text-anchor="middle">Telegram Alert</text>
+  <line x1="800" y1="368" x2="1110" y2="368" stroke="#30363d" stroke-width="1" />
+  <text x="800" y="395" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" fill="#f85149">STOP-LOSS ALERT</text>
+  <text x="800" y="430" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="22" font-weight="700" fill="#f0f6fc">TEM  $47.19  -2.62%</text>
+  <text x="800" y="458" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#8b949e">Stop: $49.75 | Breach: -$2.56</text>
+  <text x="800" y="478" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#8b949e">Pre-market. Review at open.</text>
+  <text x="800" y="510" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#6e7681">Not financial advice.</text>
+
+  <rect x="0" y="590" width="1200" height="40" fill="#161b22" />
+  <text x="80" y="616" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#8b949e">github.com/tellmefrankie/ai-investment-skills</text>
+  <text x="1120" y="616" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#3fb950" text-anchor="end">Claude Code</text>
+</svg>

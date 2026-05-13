@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect x="0" y="0" width="1200" height="5" fill="#f0883e" />
+  <rect x="60" y="80" width="4" height="120" fill="#f0883e" rx="2" />
+
+  <!-- Tag -->
+  <rect x="80" y="78" width="180" height="32" rx="6" fill="#21262d" />
+  <text x="170" y="99" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e" text-anchor="middle" letter-spacing="1">SIGNAL INVERSION</text>
+
+  <!-- Main headline -->
+  <text x="80" y="162" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="52" font-weight="700" fill="#f0f6fc">84% of RXRX call volume</text>
+  <text x="80" y="225" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="52" font-weight="700" fill="#f0f6fc">was lottery tickets.</text>
+  <text x="80" y="285" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="36" font-weight="400" fill="#8b949e">Raw signal said bullish. Adjusted said bearish.</text>
+
+  <!-- Before/after comparison -->
+  <rect x="80" y="330" width="340" height="160" rx="10" fill="#1c2128" stroke="#30363d" stroke-width="1" />
+  <text x="250" y="360" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e" text-anchor="middle">RAW (before filter)</text>
+  <text x="250" y="400" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="44" font-weight="700" fill="#3fb950" text-anchor="middle">0.38</text>
+  <text x="250" y="432" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" fill="#3fb950" text-anchor="middle">EXTREME BULLISH</text>
+  <text x="250" y="470" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#6e7681" text-anchor="middle">P/C ratio</text>
+
+  <!-- Arrow -->
+  <text x="460" y="420" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="48" fill="#f0883e" text-anchor="middle">→</text>
+
+  <rect x="500" y="330" width="340" height="160" rx="10" fill="#1c2128" stroke="#f85149" stroke-width="1.5" />
+  <text x="670" y="360" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e" text-anchor="middle">ADJUSTED (84% filtered)</text>
+  <text x="670" y="400" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="44" font-weight="700" fill="#f85149" text-anchor="middle">2.37</text>
+  <text x="670" y="432" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" fill="#f85149" text-anchor="middle">BEARISH</text>
+  <text x="670" y="470" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#6e7681" text-anchor="middle">Adj P/C ratio</text>
+
+  <!-- Right label -->
+  <rect x="880" y="330" width="260" height="160" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1" />
+  <text x="1010" y="370" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e" text-anchor="middle">LOTTERY %</text>
+  <text x="1010" y="430" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="60" font-weight="700" fill="#f0883e" text-anchor="middle">84%</text>
+  <text x="1010" y="468" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#6e7681" text-anchor="middle">calls &lt; $0.10 premium</text>
+
+  <rect x="0" y="590" width="1200" height="40" fill="#161b22" />
+  <text x="80" y="616" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#8b949e">github.com/tellmefrankie/ai-investment-skills</text>
+  <text x="1120" y="616" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#3fb950" text-anchor="end">Claude Code</text>
+</svg>

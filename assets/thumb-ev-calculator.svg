@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#161b22;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bluegrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1f6feb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#388bfd;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect x="0" y="0" width="1200" height="5" fill="url(#bluegrad)" />
+  <rect x="60" y="80" width="4" height="120" fill="#388bfd" rx="2" />
+
+  <!-- Tag -->
+  <rect x="80" y="78" width="230" height="32" rx="6" fill="#21262d" />
+  <text x="195" y="99" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e" text-anchor="middle" letter-spacing="1">EV POSITION SIZING</text>
+
+  <!-- Headline -->
+  <text x="80" y="162" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="56" font-weight="700" fill="#f0f6fc">Math decides the</text>
+  <text x="80" y="228" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="56" font-weight="700" fill="#388bfd">position size.</text>
+  <text x="80" y="285" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="30" fill="#8b949e">Bull / base / bear scenarios. Probability-weighted EV.</text>
+
+  <!-- EV table -->
+  <rect x="80" y="320" width="680" height="240" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1" />
+
+  <!-- Header -->
+  <rect x="80" y="320" width="680" height="36" rx="10" fill="#21262d" />
+  <rect x="80" y="345" width="680" height="11" fill="#21262d" />
+  <text x="100" y="343" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e">EV Analysis — 2026-05-13</text>
+
+  <!-- RXRX row -->
+  <text x="100" y="378" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#f0f6fc">RXRX  $3.26 | Position: $1,630</text>
+  <text x="100" y="398" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#3fb950">  Bull  (30%): $4.80 → +47.2% → EV: +$770</text>
+  <text x="100" y="416" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#8b949e">  Base  (45%): $3.40 → +4.3%  → EV: +$63</text>
+  <text x="100" y="434" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#f85149">  Bear  (25%): $2.85 → -12.6% → EV: -$205</text>
+  <line x1="100" y1="445" x2="720" y2="445" stroke="#30363d" stroke-width="1" />
+  <text x="100" y="464" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#388bfd">  Weighted EV: +$628 (+38.5%)   [HIGH confidence]</text>
+
+  <!-- KTOS row -->
+  <text x="100" y="494" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#f0f6fc">KTOS  $56.99 | Position: $11,398</text>
+  <text x="100" y="512" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#388bfd">  Weighted EV: +$642 (+5.6%)    [MEDIUM confidence]</text>
+  <text x="100" y="530" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#8b949e">  Note: Defense sector momentum positive. IV 170%.</text>
+  <text x="100" y="548" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#f85149">TEM   — Weighted EV: -$41 (-0.8%)  BELOW STOP</text>
+
+  <!-- Right stat -->
+  <rect x="800" y="320" width="330" height="120" rx="10" fill="#161b22" stroke="#238636" stroke-width="1" />
+  <text x="965" y="358" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e" text-anchor="middle">RXRX WEIGHTED EV</text>
+  <text x="965" y="415" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="52" font-weight="700" fill="#3fb950" text-anchor="middle">+38.5%</text>
+
+  <rect x="800" y="460" width="330" height="100" rx="10" fill="#161b22" stroke="#f85149" stroke-width="1" />
+  <text x="965" y="495" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" fill="#8b949e" text-anchor="middle">TEM EV (at stop)</text>
+  <text x="965" y="542" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="42" font-weight="700" fill="#f85149" text-anchor="middle">-0.8%</text>
+
+  <rect x="0" y="590" width="1200" height="40" fill="#161b22" />
+  <text x="80" y="616" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#8b949e">github.com/tellmefrankie/ai-investment-skills</text>
+  <text x="1120" y="616" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" fill="#3fb950" text-anchor="end">Claude Code</text>
+</svg>
