@@ -344,12 +344,14 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     req.on('data', (chunk: Buffer) => { body += chunk; });
     req.on('end', async () => {
       try {
-        const { text } = JSON.parse(body) as { text?: string };
+        const { text, imagePath } = JSON.parse(body) as { text?: string; imagePath?: string };
         if (!text || text.trim().length === 0) { json(res, { error: 'text required' }, 400); return; }
         if (text.length > 280) { json(res, { error: 'text too long (max 280)' }, 400); return; }
+        // CEO RULE: image required — no text-only tweets
+        if (!imagePath) { json(res, { error: 'imagePath required — CEO rule: no text-only tweets' }, 400); return; }
         // Import and execute browser poster
         const { postToTwitter } = await import('../growth/browser-poster.js');
-        const ok = await postToTwitter(text.trim());
+        const ok = await postToTwitter(text.trim(), imagePath);
         if (ok) {
           // Log to growth_log
           db.prepare(`
@@ -370,21 +372,26 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
 
   // GET /api/browser-post/queue — return pre-written tweet drafts
   if (method === 'GET' && url === '/api/browser-post/queue') {
+    // CEO rules: (1) image required, (2) no links, (3) Discussion approval before posting
+    const ASSETS = (process.env.HOME ?? '/Users/jaehyun') + '/Desktop/Projects/news-engine/assets';
     const drafts = [
       {
         id: 1,
-        text: `XLI options P/C hit 5.32 last week. Normal range: 0.5-1.2.\n\nAfter filtering $0.01 lottery calls: still 4.89. Real institutional hedging.\n\nBuilt the scanner with Claude Code. Open source.\ngithub.com/tellmefrankie/ai-investment-skills\n\n#ClaudeCode #options #algotrading`,
-        label: 'XLI/CEG Scanner Story',
+        text: `XLI options P/C hit 5.32 last week. Normal range: 0.5-1.2.\n\nAfter filtering $0.01 lottery calls: still 4.89. Real institutional hedging, not noise.\n\nRaw P/C said neutral. Adjusted said extremely bearish.\n\n#ClaudeCode #options #algotrading`,
+        label: 'XLI Scanner Story',
+        imagePath: ASSETS + '/thumb-xli-anomaly.svg',
       },
       {
         id: 2,
-        text: `RXRX raw P/C: 0.38 (extreme bullish).\nFiltered: 2.37 (bearish).\n\n84% of call volume was <$0.10 OTM noise.\nSignal completely inverted.\n\nClaude Code skill that does this:\ngithub.com/tellmefrankie/ai-investment-skills\n\n#options #ClaudeCode`,
-        label: 'P/C Ratio Filter Story',
+        text: `RXRX raw P/C: 0.38 (extreme bullish).\nFiltered: 2.37 (bearish).\n\n84% of call volume was <$0.10 OTM lottery tickets.\nSignal completely inverted after filtering.\n\n#options #ClaudeCode #investing`,
+        label: 'RXRX P/C Filter Story',
+        imagePath: ASSETS + '/thumb-rxrx-inverted.svg',
       },
       {
         id: 3,
-        text: `6 AI agent skills for stock analysis, packaged as Claude Code tools.\n\nWhat they do:\n• Scan unusual options flow\n• Filter lottery calls from real hedges\n• Summarize SEC filings\n• Track insider transactions\n\nAll free. All open source.\n\ngithub.com/tellmefrankie/ai-investment-skills`,
-        label: 'Skills Overview',
+        text: `Most options scanners show raw Put/Call ratio.\n\nThe problem: $0.01 OTM calls inflate it massively — lottery tickets, not real positioning.\n\nFilter them out and the signal changes. XLI went from 0.53 to 5.32.\n\n#options #algotrading`,
+        label: 'P/C Filter Concept',
+        imagePath: ASSETS + '/thumb-6-skills.svg',
       },
     ];
     json(res, drafts);

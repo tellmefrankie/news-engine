@@ -34,14 +34,34 @@ async function launchWithProfile(): Promise<ReturnType<typeof chromium.launchPer
   return context;
 }
 
-export async function postToTwitter(text: string): Promise<boolean> {
-  console.log('[Browser] Posting to X/Twitter...');
+/**
+ * CEO RULE: Image required for all tweets. Text-only posts are forbidden.
+ * imagePath must be an absolute path to a PNG/JPG file.
+ */
+export async function postToTwitter(text: string, imagePath: string): Promise<boolean> {
+  if (!imagePath) {
+    console.error('[Browser] Image required — CEO rule: no text-only tweets.');
+    return false;
+  }
+
+  const fs = await import('fs');
+  if (!fs.existsSync(imagePath)) {
+    console.error('[Browser] Image file not found:', imagePath);
+    return false;
+  }
+
+  console.log('[Browser] Posting to X/Twitter with image:', imagePath);
   const context = await launchWithProfile();
   const page = await context.newPage();
 
   try {
     await page.goto('https://x.com/compose/post', { waitUntil: 'domcontentloaded', timeout: 20000 });
     await page.waitForTimeout(3000);
+
+    // Attach image via file input
+    const fileInput = page.locator('input[type="file"]').first();
+    await fileInput.setInputFiles(imagePath);
+    await page.waitForTimeout(2000); // wait for upload preview
 
     // Type in the tweet compose box
     const editor = page.locator('[data-testid="tweetTextarea_0"]');
@@ -54,7 +74,7 @@ export async function postToTwitter(text: string): Promise<boolean> {
     await postBtn.click();
     await page.waitForTimeout(3000);
 
-    console.log('[Browser] Tweet posted successfully!');
+    console.log('[Browser] Tweet posted successfully with image!');
     return true;
   } catch (error) {
     console.error('[Browser] Twitter post failed:', error);
@@ -77,7 +97,8 @@ Free on GitHub: github.com/tellmefrankie/ai-investment-skills
 
 #ClaudeCode #BuildInPublic #algotrading`;
 
-  postToTwitter(tweet).then(ok => {
+  const cliImage = process.argv[process.argv.indexOf('--twitter') + 1] || '';
+  postToTwitter(tweet, cliImage).then(ok => {
     console.log('Result:', ok);
     process.exit(ok ? 0 : 1);
   });
